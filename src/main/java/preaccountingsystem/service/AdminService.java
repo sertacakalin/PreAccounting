@@ -26,6 +26,14 @@ public class AdminService {
     private final InvoiceRepository invoiceRepository;
     private final PasswordEncoder passwordEncoder;
 
+    public void resetAdminPassword() {
+        User admin = userRepository.findByUsername("admin")
+                .orElseThrow(() -> new ResourceNotFoundException("Admin user not found"));
+
+        admin.setPassword(passwordEncoder.encode("admin123"));
+        userRepository.save(admin);
+    }
+
     public CreateCustomerResponse createCustomer(CreateCustomerRequest request) {
         // Email'in benzersiz olup olmadığını kontrol et
         if (customerRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -53,7 +61,7 @@ public class AdminService {
                 .build();
 
         user.setCustomer(customer);
-        
+
         User savedUser = userRepository.save(user);
         Customer savedCustomer = customerRepository.save(customer);
 
@@ -89,10 +97,10 @@ public class AdminService {
 
         BigDecimal totalIncome = invoiceRepository.getSumOfAmountByTypeAndDateBetween(InvoiceType.INCOME, from, to);
         BigDecimal totalExpense = invoiceRepository.getSumOfAmountByTypeAndDateBetween(InvoiceType.EXPENSE, from, to);
-        
+
         totalIncome = totalIncome == null ? BigDecimal.ZERO : totalIncome;
         totalExpense = totalExpense == null ? BigDecimal.ZERO : totalExpense;
-        
+
         BigDecimal netProfit = totalIncome.subtract(totalExpense);
         long invoiceCount = invoiceRepository.countInvoicesByDateBetween(from, to);
 

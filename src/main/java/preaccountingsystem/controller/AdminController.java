@@ -19,6 +19,12 @@ public class AdminController {
 
     private final AdminService adminService;
 
+    @PostMapping("/reset-admin-password")
+    public ResponseEntity<String> resetAdminPassword() {
+        adminService.resetAdminPassword();
+        return ResponseEntity.ok("Admin password reset to: admin123");
+    }
+
     @PostMapping("/customers")
     public ResponseEntity<CreateCustomerResponse> createCustomer(@Valid @RequestBody CreateCustomerRequest request) {
         return new ResponseEntity<>(adminService.createCustomer(request), HttpStatus.CREATED);

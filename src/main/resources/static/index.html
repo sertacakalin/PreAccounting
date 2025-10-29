@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-Accounting System</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="app-container">
+    <header>
+        <h1>Pre-Accounting System</h1>
+        <div id="user-info" class="hidden">
+            <span id="username-display"></span>
+            <button id="logout-button">Logout</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Login View -->
+        <div id="login-view">
+            <h2>Login</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required value="admin">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required value="admin123">
+                </div>
+                <button type="submit">Login</button>
+                <p id="login-error" class="error-message"></p>
+            </form>
+        </div>
+
+        <!-- Admin View -->
+        <div id="admin-view" class="hidden">
+            <h2>Admin Dashboard</h2>
+            <div class="section">
+                <h3>Create Customer</h3>
+                <form id="create-customer-form">
+                    <input type="text" id="customer-name" placeholder="Name" required>
+                    <input type="email" id="customer-email" placeholder="Email" required>
+                    <input type="text" id="customer-phone" placeholder="Phone">
+                    <input type="text" id="customer-taxNo" placeholder="Tax No">
+                    <input type="text" id="customer-address" placeholder="Address">
+                    <button type="submit">Create Customer</button>
+                </form>
+                <div id="create-customer-result"></div>
+            </div>
+            <div class="section">
+                <h3>All Customers</h3>
+                <button id="list-customers-button">Refresh List</button>
+                <ul id="customers-list"></ul>
+            </div>
+            <div class="section">
+                <h3>Invoices by Customer</h3>
+                <select id="customer-invoice-select"></select>
+                <button id="list-invoices-button">Get Invoices</button>
+                <ul id="invoices-list-admin"></ul>
+            </div>
+             <div class="section">
+                <h3>Summary Report</h3>
+                <form id="admin-report-form">
+                    <input type="date" id="admin-from-date" required>
+                    <input type="date" id="admin-to-date" required>
+                    <button type="submit">Get Report</button>
+                </form>
+                <div id="admin-report-result"></div>
+            </div>
+        </div>
+
+        <!-- Customer View -->
+        <div id="customer-view" class="hidden">
+            <h2>Customer Dashboard</h2>
+            <div class="section">
+                <h3>Create Invoice</h3>
+                <form id="create-invoice-form">
+                     <select id="invoice-type" required>
+                        <option value="INCOME">Income</option>
+                        <option value="EXPENSE">Expense</option>
+                    </select>
+                    <input type="date" id="invoice-date" required>
+                    <input type="number" id="invoice-amount" placeholder="Amount" required step="0.01">
+                    <input type="text" id="invoice-description" placeholder="Description">
+                    <button type="submit">Create Invoice</button>
+                </form>
+            </div>
+            <div class="section">
+                <h3>My Invoices</h3>
+                <button id="list-my-invoices-button">Refresh Invoices</button>
+                <ul id="invoices-list-customer"></ul>
+            </div>
+            <div class="section">
+                <h3>My Summary Report</h3>
+                <form id="customer-report-form">
+                    <input type="date" id="customer-from-date" required>
+                    <input type="date" id="customer-to-date" required>
+                    <button type="submit">Get My Report</button>
+                </form>
+                <div id="customer-report-result"></div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

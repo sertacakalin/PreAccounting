@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -36,15 +35,8 @@ public class AuthService {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UnauthorizedException("User not found"));
 
-        // JwtService, UserDetails beklediği için User nesnesini doğrudan kullanamayız.
-        // Spring Security'nin User objesini kullanarak bir UserDetails nesnesi oluşturuyoruz.
-        // Not: User entity'niz UserDetails'i implemente ederse bu ara adıma gerek kalmaz.
-        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUsername())
-                .password(user.getPassword()) // Token oluşturulurken şifre kullanılmaz ama UserDetails için gereklidir.
-                .roles(user.getRole().name())
-                .build();
-        String jwtToken = jwtService.generateToken(userDetails);
+        // User entity zaten UserDetails'i implement ediyor
+        String jwtToken = jwtService.generateToken(user);
 
         Long customerId = null;
         if (user.getCustomer() != null) {

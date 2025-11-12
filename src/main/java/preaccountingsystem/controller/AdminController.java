@@ -2,6 +2,7 @@ package preaccountingsystem.controller;
 
 import preaccountingsystem.dto.*;
 import preaccountingsystem.service.AdminService;
+import preaccountingsystem.service.AIReportService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,6 +19,7 @@ import java.util.List;
 public class AdminController {
 
     private final AdminService adminService;
+    private final AIReportService aiReportService;
 
     @PostMapping("/reset-admin-password")
     public ResponseEntity<String> resetAdminPassword() {
@@ -45,5 +47,15 @@ public class AdminController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
         return ResponseEntity.ok(adminService.summaryReport(from, to));
+    }
+
+    @PostMapping("/reports/ai-generate")
+    public ResponseEntity<AIReportResponse> generateAIReport(@Valid @RequestBody AIReportRequest request) {
+        AIReportResponse response = aiReportService.generateReport(request);
+        if (response.isBasarili()) {
+            return ResponseEntity.ok(response);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }

@@ -22,6 +22,12 @@ jwt:
   secret: "bXktc2VjcmV0LWtleS1mb3Itand0LXNlY3VyaXR5LWVuY29kaW5nLWFuZC1kZWNvZGluZy1wYXNzLWFsbC1jb3Vac2U="
   expiration: 86400000
 
+ai:
+  api:
+    key: ${AI_API_KEY:your-claude-api-key-here}
+    url: https://api.anthropic.com/v1/messages
+  model: claude-3-5-sonnet-20241022
+
 server:
   port: 8080
   servlet:

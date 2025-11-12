@@ -6,6 +6,7 @@ import MainLayout from '@/components/Layout/MainLayout';
 import CustomerList from '@/components/Admin/CustomerManagement/CustomerList';
 import CustomerInvoiceList from '@/components/Customer/InvoiceList';
 import AdminSummaryReport from '@/components/Admin/Reports/SummaryReport';
+import AIReport from '@/components/Admin/Reports/AIReport';
 import PersonalReport from '@/components/Customer/MyReports/PersonalReport';
 
 // Placeholder Dashboards
@@ -30,6 +31,7 @@ const AppRoutes = () => {
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="customers" element={<CustomerList />} />
             <Route path="reports" element={<AdminSummaryReport />} />
+            <Route path="ai-reports" element={<AIReport />} />
             {/* Other admin routes will go here */}
           </Route>
 

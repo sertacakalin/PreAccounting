@@ -35,3 +35,20 @@ export interface SummaryReport {
   netProfit: number;
   invoiceCount: number;
 }
+
+export interface AIReportRequest {
+  raporTuru: string;
+  baslangicTarihi: string;
+  bitisTarihi: string;
+  firmaUnvan?: string;
+  vergiNo?: string;
+  ozelSorgu?: string;
+}
+
+export interface AIReportResponse {
+  raporTuru: string;
+  markdownRapor: string;
+  jsonOzet: string;
+  basarili: boolean;
+  hata?: string;
+}

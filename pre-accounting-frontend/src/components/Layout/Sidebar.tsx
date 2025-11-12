@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
-import { FaTachometerAlt, FaUsers, FaFileInvoice, FaChartBar } from 'react-icons/fa';
+import { FaTachometerAlt, FaUsers, FaFileInvoice, FaChartBar, FaRobot } from 'react-icons/fa';
 
 const Sidebar = () => {
   const { auth } = useAuth();
@@ -18,6 +18,9 @@ const Sidebar = () => {
       </NavLink>
       <NavLink to="/admin/reports" className={({ isActive }) => `flex items-center p-3 my-1 rounded-lg ${isActive ? 'bg-secondary text-white' : 'text-white hover:bg-primary'}`}>
         <FaChartBar className="mr-3" /> Reports
+      </NavLink>
+      <NavLink to="/admin/ai-reports" className={({ isActive }) => `flex items-center p-3 my-1 rounded-lg ${isActive ? 'bg-secondary text-white' : 'text-white hover:bg-primary'}`}>
+        <FaRobot className="mr-3" /> AI Reports
       </NavLink>
     </>
   );

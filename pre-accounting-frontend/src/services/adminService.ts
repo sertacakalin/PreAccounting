@@ -1,5 +1,5 @@
 import api from './api';
-import { Customer } from '@/types';
+import { Customer, Invoice } from '@/types';
 
 export const getCustomers = async (): Promise<Customer[]> => {
   const response = await api.get('/api/admin/customers');
@@ -28,4 +28,24 @@ export const createCustomer = async (customerData: CreateCustomerRequest): Promi
   return response.data;
 };
 
-// Add other admin-related API calls here
+export interface DashboardStats {
+  totalCustomers: number;
+  totalInvoices: number;
+  totalIncome: number;
+  totalExpense: number;
+  netProfit: number;
+}
+
+// Get all invoices for admin (across all customers)
+export const getAdminInvoices = async (customerId?: number): Promise<Invoice[]> => {
+  const url = customerId
+    ? `/api/admin/invoices?customerId=${customerId}`
+    : '/api/admin/invoices';
+  const response = await api.get(url);
+  return response.data;
+};
+
+// Delete a customer
+export const deleteCustomer = async (customerId: number): Promise<void> => {
+  await api.delete(`/api/admin/customers/${customerId}`);
+};

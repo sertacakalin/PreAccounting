@@ -36,8 +36,17 @@ public class AdminController {
     }
 
     @GetMapping("/invoices")
-    public ResponseEntity<List<InvoiceDto>> listInvoicesByCustomerId(@RequestParam Long customerId) {
-        return ResponseEntity.ok(adminService.listInvoicesByCustomerId(customerId));
+    public ResponseEntity<List<InvoiceDto>> listInvoices(@RequestParam(required = false) Long customerId) {
+        if (customerId != null) {
+            return ResponseEntity.ok(adminService.listInvoicesByCustomerId(customerId));
+        }
+        return ResponseEntity.ok(adminService.listAllInvoices());
+    }
+
+    @DeleteMapping("/customers/{customerId}")
+    public ResponseEntity<Void> deleteCustomer(@PathVariable Long customerId) {
+        adminService.deleteCustomer(customerId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/reports/summary")

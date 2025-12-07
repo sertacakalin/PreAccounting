@@ -90,6 +90,25 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
+    public List<InvoiceDto> listAllInvoices() {
+        return invoiceRepository.findAll().stream()
+                .map(this::convertToInvoiceDto)
+                .collect(Collectors.toList());
+    }
+
+    public void deleteCustomer(Long customerId) {
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + customerId));
+
+        // Delete associated user
+        if (customer.getUser() != null) {
+            userRepository.delete(customer.getUser());
+        }
+
+        // Invoices will be deleted via cascade if configured, or handle explicitly
+        customerRepository.delete(customer);
+    }
+
     public SummaryReportResponse summaryReport(LocalDate from, LocalDate to) {
         if (from.isAfter(to)) {
             throw new BusinessException("'From' date cannot be after 'to' date");

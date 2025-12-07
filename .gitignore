@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Frontend ###
+node_modules/
+pre-accounting-frontend/dist/
+pre-accounting-frontend/package-lock.json

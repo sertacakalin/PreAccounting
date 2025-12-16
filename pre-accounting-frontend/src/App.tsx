@@ -8,6 +8,8 @@ import CustomerInvoiceList from '@/components/Customer/InvoiceList';
 import AdminSummaryReport from '@/components/Admin/Reports/SummaryReport';
 import AIReport from '@/components/Admin/Reports/AIReport';
 import PersonalReport from '@/components/Customer/MyReports/PersonalReport';
+import MasterDataDashboard from '@/components/Admin/MasterData/MasterDataDashboard';
+import UnitManagement from '@/components/Admin/MasterData/UnitManagement';
 
 // Placeholder Dashboards
 const AdminDashboard = () => <div>Admin Dashboard</div>;
@@ -32,7 +34,11 @@ const AppRoutes = () => {
             <Route path="customers" element={<CustomerList />} />
             <Route path="reports" element={<AdminSummaryReport />} />
             <Route path="ai-reports" element={<AIReport />} />
-            {/* Other admin routes will go here */}
+
+            {/* Master Data Routes */}
+            <Route path="master-data" element={<MasterDataDashboard />} />
+            <Route path="master-data/units" element={<UnitManagement />} />
+            {/* Add more master data routes as needed */}
           </Route>
 
           {/* Customer Routes */}

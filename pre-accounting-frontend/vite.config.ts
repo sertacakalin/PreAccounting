@@ -14,11 +14,11 @@ export default defineConfig({
     port: 3000, // Frontend development server port
     proxy: {
       '/api': {
-        target: 'http://localhost:8080', // Backend server
+        target: 'http://localhost:8081', // Backend server (UPDATED)
         changeOrigin: true,
       },
        '/auth': {
-        target: 'http://localhost:8080', // Backend server
+        target: 'http://localhost:8081', // Backend server (UPDATED)
         changeOrigin: true,
       }
     }

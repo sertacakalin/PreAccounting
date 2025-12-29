@@ -17,8 +17,12 @@ public class PreAccountingSystemApplication {
     }
 
     @Bean
-    public CommandLineRunner commandLineRunner(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner commandLineRunner(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            preaccountingsystem.service.SystemSettingsService systemSettingsService) {
         return args -> {
+            // Initialize admin user
             User adminUser = userRepository.findByUsername("admin")
                     .orElse(User.builder().username("admin").build());
 
@@ -27,6 +31,10 @@ public class PreAccountingSystemApplication {
 
             userRepository.save(adminUser);
             System.out.println("Admin user ensured to exist with username 'admin' and password 'admin123'");
+
+            // Initialize system settings
+            systemSettingsService.initializeDefaultSettings();
+            System.out.println("System settings initialized");
         };
     }
 }

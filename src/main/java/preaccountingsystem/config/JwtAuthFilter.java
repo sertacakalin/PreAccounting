@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -23,12 +24,27 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
+    private static final List<String> SWAGGER_PATHS = List.of(
+            "/swagger-ui.html",
+            "/swagger-ui/",
+            "/v3/api-docs",
+            "/webjars/"
+    );
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+        final String path = request.getServletPath();
+
+        boolean isSwaggerPath = SWAGGER_PATHS.stream().anyMatch(path::startsWith);
+        if (isSwaggerPath) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String username;
@@ -44,6 +60,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             if (jwtService.isTokenValid(jwt, userDetails)) {
+                // Check if user's company is PASSIVE (only for CUSTOMER users)
+                if (userDetails instanceof preaccountingsystem.entity.User) {
+                    preaccountingsystem.entity.User user = (preaccountingsystem.entity.User) userDetails;
+                    if (user.getCustomer() != null &&
+                        user.getCustomer().getStatus() == preaccountingsystem.entity.CompanyStatus.PASSIVE) {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"error\":\"Company account is deactivated\"}");
+                        return;
+                    }
+                }
+
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

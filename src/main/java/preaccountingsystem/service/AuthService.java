@@ -35,6 +35,11 @@ public class AuthService {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UnauthorizedException("User not found"));
 
+        // Check if user has a customer/company and if it's PASSIVE
+        if (user.getCustomer() != null && user.getCustomer().getStatus() == preaccountingsystem.entity.CompanyStatus.PASSIVE) {
+            throw new UnauthorizedException("Your company account has been deactivated. Please contact the administrator.");
+        }
+
         // User entity zaten UserDetails'i implement ediyor
         String jwtToken = jwtService.generateToken(user);
 

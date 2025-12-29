@@ -30,6 +30,11 @@ public class Customer {
     private String taxNo;
     private String address;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private CompanyStatus status = CompanyStatus.ACTIVE;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;

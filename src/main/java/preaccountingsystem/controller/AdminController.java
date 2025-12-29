@@ -37,17 +37,19 @@ public class AdminController {
         return ResponseEntity.ok(adminService.listCustomers());
     }
 
-    @GetMapping("/invoices")
-    public ResponseEntity<List<InvoiceDto>> listInvoicesByCustomerId(@RequestParam Long customerId) {
-        return ResponseEntity.ok(adminService.listInvoicesByCustomerId(customerId));
-    }
+    // Commented out - replaced by IncomeExpenseService
+    // @GetMapping("/invoices")
+    // public ResponseEntity<List<InvoiceDto>> listInvoicesByCustomerId(@RequestParam Long customerId) {
+    //     return ResponseEntity.ok(adminService.listInvoicesByCustomerId(customerId));
+    // }
 
-    @GetMapping("/reports/summary")
-    public ResponseEntity<SummaryReportResponse> getSummaryReport(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return ResponseEntity.ok(adminService.summaryReport(from, to));
-    }
+    // Commented out - replaced by IncomeExpenseService
+    // @GetMapping("/reports/summary")
+    // public ResponseEntity<SummaryReportResponse> getSummaryReport(
+    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
+    //     return ResponseEntity.ok(adminService.summaryReport(from, to));
+    // }
 
     @GetMapping("/users")
     public ResponseEntity<List<UserDto>> listAllUsers() {

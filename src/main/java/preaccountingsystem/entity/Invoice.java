@@ -5,9 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -21,29 +26,61 @@ public class Invoice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    @Column(name = "invoice_number", unique = true, nullable = false, length = 50)
+    private String invoiceNumber;
+
+    @Column(name = "invoice_date", nullable = false)
+    private LocalDate invoiceDate;
+
+    @Column(name = "due_date", nullable = false)
+    private LocalDate dueDate;
+
+    @Column(name = "total_amount", nullable = false, precision = 19, scale = 2)
+    @Builder.Default
+    private BigDecimal totalAmount = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private InvoiceType type;
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private InvoiceStatus status = InvoiceStatus.UNPAID;
 
-    @Column(nullable = false)
-    private LocalDate date;
+    @Column(length = 1000)
+    private String notes;
 
-    @Column(nullable = false)
-    private BigDecimal amount;
+    // Link to CustomerSupplier (the customer receiving the invoice)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_supplier_id", nullable = false)
+    private CustomerSupplier customerSupplier;
 
-    private String description;
+    // Tenant isolation - belongs to a company
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Customer company;
 
+    // Invoice items (one-to-many)
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<InvoiceItem> items = new ArrayList<>();
+
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        if (createdAt == null) {
-            createdAt = LocalDate.now();
-        }
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    // Helper method to add invoice item
+    public void addItem(InvoiceItem item) {
+        items.add(item);
+        item.setInvoice(this);
+        recalculateTotal();
+    }
+
+    // Helper method to recalculate total amount
+    public void recalculateTotal() {
+        this.totalAmount = items.stream()
+                .map(InvoiceItem::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

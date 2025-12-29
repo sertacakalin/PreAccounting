@@ -81,38 +81,40 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
-    public List<InvoiceDto> listInvoicesByCustomerId(Long customerId) {
-        if (!customerRepository.existsById(customerId)) {
-            throw new ResourceNotFoundException("Customer not found with id: " + customerId);
-        }
-        return invoiceRepository.findByCustomerId(customerId).stream()
-                .map(this::convertToInvoiceDto)
-                .collect(Collectors.toList());
-    }
+    // Commented out - replaced by IncomeExpenseService
+    // public List<InvoiceDto> listInvoicesByCustomerId(Long customerId) {
+    //     if (!customerRepository.existsById(customerId)) {
+    //         throw new ResourceNotFoundException("Customer not found with id: " + customerId);
+    //     }
+    //     return invoiceRepository.findByCustomerId(customerId).stream()
+    //             .map(this::convertToInvoiceDto)
+    //             .collect(Collectors.toList());
+    // }
 
-    public SummaryReportResponse summaryReport(LocalDate from, LocalDate to) {
-        if (from.isAfter(to)) {
-            throw new BusinessException("'From' date cannot be after 'to' date");
-        }
-
-        BigDecimal totalIncome = invoiceRepository.getSumOfAmountByTypeAndDateBetween(InvoiceType.INCOME, from, to);
-        BigDecimal totalExpense = invoiceRepository.getSumOfAmountByTypeAndDateBetween(InvoiceType.EXPENSE, from, to);
-
-        totalIncome = totalIncome == null ? BigDecimal.ZERO : totalIncome;
-        totalExpense = totalExpense == null ? BigDecimal.ZERO : totalExpense;
-
-        BigDecimal netProfit = totalIncome.subtract(totalExpense);
-        long invoiceCount = invoiceRepository.countInvoicesByDateBetween(from, to);
-
-        return SummaryReportResponse.builder()
-                .fromDate(from)
-                .toDate(to)
-                .totalIncome(totalIncome)
-                .totalExpense(totalExpense)
-                .netProfit(netProfit)
-                .invoiceCount(invoiceCount)
-                .build();
-    }
+    // Commented out - replaced by IncomeExpenseService
+    // public SummaryReportResponse summaryReport(LocalDate from, LocalDate to) {
+    //     if (from.isAfter(to)) {
+    //         throw new BusinessException("'From' date cannot be after 'to' date");
+    //     }
+    //
+    //     BigDecimal totalIncome = invoiceRepository.getSumOfAmountByTypeAndDateBetween(InvoiceType.INCOME, from, to);
+    //     BigDecimal totalExpense = invoiceRepository.getSumOfAmountByTypeAndDateBetween(InvoiceType.EXPENSE, from, to);
+    //
+    //     totalIncome = totalIncome == null ? BigDecimal.ZERO : totalIncome;
+    //     totalExpense = totalExpense == null ? BigDecimal.ZERO : totalExpense;
+    //
+    //     BigDecimal netProfit = totalIncome.subtract(totalExpense);
+    //     long invoiceCount = invoiceRepository.countInvoicesByDateBetween(from, to);
+    //
+    //     return SummaryReportResponse.builder()
+    //             .fromDate(from)
+    //             .toDate(to)
+    //             .totalIncome(totalIncome)
+    //             .totalExpense(totalExpense)
+    //             .netProfit(netProfit)
+    //             .invoiceCount(invoiceCount)
+    //             .build();
+    // }
 
     public CompanyDto createCompany(CreateCompanyRequest request) {
         // Check if email already exists
@@ -191,18 +193,19 @@ public class AdminService {
                 .build();
     }
 
-    private InvoiceDto convertToInvoiceDto(Invoice invoice) {
-        return InvoiceDto.builder()
-                .id(invoice.getId())
-                .customerId(invoice.getCustomer().getId())
-                .customerName(invoice.getCustomer().getName())
-                .type(invoice.getType())
-                .date(invoice.getDate())
-                .amount(invoice.getAmount())
-                .description(invoice.getDescription())
-                .createdAt(invoice.getCreatedAt())
-                .build();
-    }
+    // Commented out - replaced by InvoiceService
+    // private InvoiceDto convertToInvoiceDto(Invoice invoice) {
+    //     return InvoiceDto.builder()
+    //             .id(invoice.getId())
+    //             .customerId(invoice.getCustomer().getId())
+    //             .customerName(invoice.getCustomer().getName())
+    //             .type(invoice.getType())
+    //             .date(invoice.getDate())
+    //             .amount(invoice.getAmount())
+    //             .description(invoice.getDescription())
+    //             .createdAt(invoice.getCreatedAt())
+    //             .build();
+    // }
 
     public List<UserDto> listAllUsers() {
         return userRepository.findAll().stream()

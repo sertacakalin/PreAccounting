@@ -25,6 +25,8 @@ configuration.setAllowedOrigins(List.of(
 ));
 ```
 
+
+
 #### 2. Startup Script Created
 **File:** `start-backend.sh`
 

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { getUser, setUser as saveUser, removeUser, getToken, setToken, removeToken } from '@/lib/auth'
-import api from '@/lib/api'
+import { authApi } from '@/lib/api'
 
 const AuthContext = createContext(null)
 
@@ -19,7 +19,7 @@ export function AuthProvider({ children }) {
 
   const login = async (username, password) => {
     try {
-      const response = await api.post('/auth/login', { username, password })
+      const response = await authApi.post('/auth/login', { username, password })
       const { token, username: userName, role } = response.data
 
       const userData = { username: userName, role }

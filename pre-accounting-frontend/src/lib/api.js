@@ -2,9 +2,17 @@ import axios from 'axios'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081'
 
-// Create axios instance
+// Create axios instance for protected API endpoints
 const api = axios.create({
   baseURL: `${API_URL}/api`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+
+// Create axios instance for auth endpoints (no /api prefix)
+export const authApi = axios.create({
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },

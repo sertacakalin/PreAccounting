@@ -16,7 +16,7 @@ cd pre-accounting-frontend
 npm install  # first time only
 npm run dev
 ```
-Frontend runs on **http://localhost:3000**
+Frontend runs on **http://localhost:3000** (or 3001 if 3000 is in use)
 
 ### Test Integration
 ```bash

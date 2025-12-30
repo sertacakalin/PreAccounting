@@ -6,6 +6,10 @@ import { DashboardLayout } from '@/layouts/DashboardLayout'
 import { LoginPage } from '@/pages/LoginPage'
 import { Dashboard } from '@/pages/Dashboard'
 import { Placeholder } from '@/pages/Placeholder'
+import { CompaniesPage } from '@/pages/CompaniesPage'
+import { UsersPage } from '@/pages/UsersPage'
+import { SystemSettingsPage } from '@/pages/SystemSettingsPage'
+import { AuditLogsPage } from '@/pages/AuditLogsPage'
 import { Toaster } from 'sonner'
 
 const queryClient = new QueryClient()
@@ -28,10 +32,10 @@ function App() {
               }
             >
               <Route index element={<Navigate to="/admin/users" replace />} />
-              <Route path="users" element={<Placeholder title="Users Management" />} />
-              <Route path="companies" element={<Placeholder title="Companies" />} />
-              <Route path="settings" element={<Placeholder title="System Settings" />} />
-              <Route path="audit" element={<Placeholder title="Audit Logs" />} />
+              <Route path="users" element={<UsersPage />} />
+              <Route path="companies" element={<CompaniesPage />} />
+              <Route path="settings" element={<SystemSettingsPage />} />
+              <Route path="audit" element={<AuditLogsPage />} />
             </Route>
 
             {/* Customer routes */}

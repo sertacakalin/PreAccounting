@@ -10,6 +10,10 @@ import { CompaniesPage } from '@/pages/CompaniesPage'
 import { UsersPage } from '@/pages/UsersPage'
 import { SystemSettingsPage } from '@/pages/SystemSettingsPage'
 import { AuditLogsPage } from '@/pages/AuditLogsPage'
+import { CustomersPage } from '@/pages/CustomersPage'
+import { InvoicesPage } from '@/pages/InvoicesPage'
+import { IncomeExpensePage } from '@/pages/IncomeExpensePage'
+import { PaymentsPage } from '@/pages/PaymentsPage'
 import { Toaster } from 'sonner'
 
 const queryClient = new QueryClient()
@@ -49,10 +53,10 @@ function App() {
             >
               <Route index element={<Navigate to="/app/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
-              <Route path="customers" element={<Placeholder title="Customers & Suppliers" />} />
-              <Route path="invoices" element={<Placeholder title="Invoices" />} />
-              <Route path="income-expense" element={<Placeholder title="Income & Expense" />} />
-              <Route path="payments" element={<Placeholder title="Payments" />} />
+              <Route path="customers" element={<CustomersPage />} />
+              <Route path="invoices" element={<InvoicesPage />} />
+              <Route path="income-expense" element={<IncomeExpensePage />} />
+              <Route path="payments" element={<PaymentsPage />} />
               <Route path="ai" element={<Placeholder title="AI Assistant" />} />
             </Route>
 

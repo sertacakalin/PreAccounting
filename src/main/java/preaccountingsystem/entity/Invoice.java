@@ -19,7 +19,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "invoices")
+@Table(name = "invoices", indexes = {
+    @Index(name = "idx_invoice_company_status", columnList = "company_id, status"),
+    @Index(name = "idx_invoice_company_date", columnList = "company_id, invoice_date"),
+    @Index(name = "idx_invoice_due_date", columnList = "due_date"),
+    @Index(name = "idx_invoice_number", columnList = "invoice_number", unique = true)
+})
 public class Invoice {
 
     @Id

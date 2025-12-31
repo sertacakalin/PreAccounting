@@ -5,7 +5,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { DashboardLayout } from '@/layouts/DashboardLayout'
 import { LoginPage } from '@/pages/LoginPage'
 import { Dashboard } from '@/pages/Dashboard'
-import { Placeholder } from '@/pages/Placeholder'
+import { AIAssistantPage } from '@/pages/AIAssistantPage'
 import { CompaniesPage } from '@/pages/CompaniesPage'
 import { UsersPage } from '@/pages/UsersPage'
 import { SystemSettingsPage } from '@/pages/SystemSettingsPage'
@@ -57,7 +57,7 @@ function App() {
               <Route path="invoices" element={<InvoicesPage />} />
               <Route path="income-expense" element={<IncomeExpensePage />} />
               <Route path="payments" element={<PaymentsPage />} />
-              <Route path="ai" element={<Placeholder title="AI Assistant" />} />
+              <Route path="ai" element={<AIAssistantPage />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/login" replace />} />

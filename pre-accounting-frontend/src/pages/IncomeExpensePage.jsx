@@ -58,7 +58,7 @@ export function IncomeExpensePage() {
   const { data: incomeCategories = [] } = useQuery({
     queryKey: ['income-categories'],
     queryFn: async () => {
-      const response = await api.get('/admin/categories/income')
+      const response = await api.get('/categories/income')
       return response.data
     },
   })
@@ -67,7 +67,7 @@ export function IncomeExpensePage() {
   const { data: expenseCategories = [] } = useQuery({
     queryKey: ['expense-categories'],
     queryFn: async () => {
-      const response = await api.get('/admin/categories/expense')
+      const response = await api.get('/categories/expense')
       return response.data
     },
   })

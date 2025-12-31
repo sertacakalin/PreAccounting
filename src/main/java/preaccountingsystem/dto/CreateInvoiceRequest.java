@@ -29,6 +29,9 @@ public class CreateInvoiceRequest {
     @Size(max = 1000, message = "Notes cannot exceed 1000 characters")
     private String notes;
 
+    @Size(min = 3, max = 3, message = "Currency must be a 3-letter ISO code")
+    private String currency; // Optional, defaults to USD if not provided
+
     @NotNull(message = "Customer/Supplier ID is required")
     private Long customerSupplierId;
 

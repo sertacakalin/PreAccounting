@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import CurrencySelect from '@/components/CurrencySelect'
 import {
   Dialog,
   DialogContent,
@@ -40,6 +41,7 @@ const invoiceSchema = z.object({
   invoiceDate: z.string().min(1, 'Invoice date is required'),
   dueDate: z.string().min(1, 'Due date is required'),
   notes: z.string().max(1000).optional(),
+  currency: z.string().length(3, 'Currency must be a 3-letter code').optional(),
   customerSupplierId: z.coerce.number().min(1, 'Customer/Supplier is required'),
   items: z.array(invoiceItemSchema).min(1, 'At least one item is required'),
 })
@@ -226,25 +228,38 @@ export function InvoicesPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="customerSupplierId">
-                    Customer <span className="text-red-500">*</span>
-                  </Label>
-                  <select
-                    id="customerSupplierId"
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    {...form.register('customerSupplierId')}
-                  >
-                    <option value="">Select a customer</option>
-                    {customers.map((customer) => (
-                      <option key={customer.id} value={customer.id}>
-                        {customer.name}
-                      </option>
-                    ))}
-                  </select>
-                  {form.formState.errors.customerSupplierId && (
-                    <p className="text-sm text-red-500">{form.formState.errors.customerSupplierId.message}</p>
-                  )}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="customerSupplierId">
+                      Customer <span className="text-red-500">*</span>
+                    </Label>
+                    <select
+                      id="customerSupplierId"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      {...form.register('customerSupplierId')}
+                    >
+                      <option value="">Select a customer</option>
+                      {customers.map((customer) => (
+                        <option key={customer.id} value={customer.id}>
+                          {customer.name}
+                        </option>
+                      ))}
+                    </select>
+                    {form.formState.errors.customerSupplierId && (
+                      <p className="text-sm text-red-500">{form.formState.errors.customerSupplierId.message}</p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="currency">Currency</Label>
+                    <CurrencySelect
+                      value={form.watch('currency')}
+                      onChange={(value) => form.setValue('currency', value)}
+                    />
+                    {form.formState.errors.currency && (
+                      <p className="text-sm text-red-500">{form.formState.errors.currency.message}</p>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-2">
@@ -389,7 +404,7 @@ export function InvoicesPage() {
                     <TableCell>{invoice.customerSupplierName}</TableCell>
                     <TableCell>{new Date(invoice.invoiceDate).toLocaleDateString()}</TableCell>
                     <TableCell>{new Date(invoice.dueDate).toLocaleDateString()}</TableCell>
-                    <TableCell>${invoice.totalAmount?.toFixed(2)}</TableCell>
+                    <TableCell>{invoice.currency || 'USD'} {invoice.totalAmount?.toFixed(2)}</TableCell>
                     <TableCell>{getStatusBadge(invoice.status)}</TableCell>
                     <TableCell className="text-right space-x-2">
                       <Button variant="outline" size="sm" onClick={() => setViewingInvoice(invoice)}>

@@ -17,6 +17,7 @@ public class PaymentDto {
     private Long id;
     private String type;
     private BigDecimal amount;
+    private String currency;
     private LocalDate paymentDate;
     private String paymentMethod;
     private String notes;

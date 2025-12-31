@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public class IncomeExpenseDto {
     private Long id;
     private BigDecimal amount;
+    private String currency;
     private LocalDate date;
     private String description;
     private String receiptFilePath;

@@ -20,6 +20,7 @@ public class InvoiceDto {
     private LocalDate invoiceDate;
     private LocalDate dueDate;
     private BigDecimal totalAmount;
+    private String currency;
     private String status;
     private String notes;
     private Long customerSupplierId;

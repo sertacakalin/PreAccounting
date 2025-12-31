@@ -36,6 +36,10 @@ public class Payment {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
+    @Column(name = "currency", nullable = false, length = 3)
+    @Builder.Default
+    private String currency = "USD";
+
     @Column(name = "payment_date", nullable = false)
     private LocalDate paymentDate;
 

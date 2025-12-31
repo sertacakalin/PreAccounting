@@ -50,6 +50,7 @@ public class IncomeExpenseService {
 
         IncomeExpense incomeExpense = IncomeExpense.builder()
                 .amount(request.getAmount())
+                .currency(request.getCurrency() != null ? request.getCurrency().toUpperCase() : "USD")
                 .date(request.getDate())
                 .description(request.getDescription())
                 .category(category)
@@ -189,6 +190,7 @@ public class IncomeExpenseService {
         return IncomeExpenseDto.builder()
                 .id(entity.getId())
                 .amount(entity.getAmount())
+                .currency(entity.getCurrency())
                 .date(entity.getDate())
                 .description(entity.getDescription())
                 .receiptFilePath(entity.getReceiptFilePath())

@@ -37,3 +37,10 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     disable-swagger-default-url: true
+
+# Currency API Configuration
+# Get your free API key at: https://www.exchangerate-api.com/
+currency:
+  api:
+    key: "" # Optional: Leave empty to use free public API (limited features)
+    base-url: "https://v6.exchangerate-api.com/v6"

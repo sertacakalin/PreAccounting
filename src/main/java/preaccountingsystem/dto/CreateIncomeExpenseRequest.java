@@ -26,6 +26,9 @@ public class CreateIncomeExpenseRequest {
     @Size(max = 500, message = "Description cannot exceed 500 characters")
     private String description;
 
+    @Size(min = 3, max = 3, message = "Currency must be a 3-letter ISO code")
+    private String currency; // Optional, defaults to USD if not provided
+
     @NotNull(message = "Category is required")
     private Long categoryId;
 }

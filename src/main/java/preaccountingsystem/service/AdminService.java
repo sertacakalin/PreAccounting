@@ -219,6 +219,16 @@ public class AdminService {
             throw new BusinessException("Username " + request.getUsername() + " already exists");
         }
 
+        // CUSTOMER users MUST have a company
+        if (request.getRole() == Role.CUSTOMER && request.getCompanyId() == null) {
+            throw new BusinessException("CUSTOMER users must be linked to a company. Please select a company.");
+        }
+
+        // ADMIN users cannot have a company
+        if (request.getRole() == Role.ADMIN && request.getCompanyId() != null) {
+            throw new BusinessException("ADMIN users cannot be linked to a company");
+        }
+
         // Create user
         User user = User.builder()
                 .username(request.getUsername())
@@ -226,11 +236,8 @@ public class AdminService {
                 .role(request.getRole())
                 .build();
 
-        // Link to company if provided and role is CUSTOMER
-        if (request.getCompanyId() != null) {
-            if (request.getRole() != Role.CUSTOMER) {
-                throw new BusinessException("Only CUSTOMER users can be linked to a company");
-            }
+        // Link to company for CUSTOMER users
+        if (request.getRole() == Role.CUSTOMER) {
             Customer company = customerRepository.findById(request.getCompanyId())
                     .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + request.getCompanyId()));
 

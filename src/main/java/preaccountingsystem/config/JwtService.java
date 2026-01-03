@@ -36,6 +36,13 @@ public class JwtService {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
+
+        // Add role to JWT claims if User entity
+        if (userDetails instanceof preaccountingsystem.entity.User) {
+            preaccountingsystem.entity.User user = (preaccountingsystem.entity.User) userDetails;
+            extraClaims.put("role", user.getRole().name());
+        }
+
         return generateToken(extraClaims, userDetails);
     }
 

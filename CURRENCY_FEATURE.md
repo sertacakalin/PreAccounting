@@ -33,7 +33,7 @@ Add to `application.yml` or set as environment variables:
 ```yaml
 currency:
   api:
-    key: "YOUR_API_KEY_HERE" # Optional - leave empty for free API
+    key: cb68e4631fe3f5f041f18aaf # Optional - leave empty for free API
     base-url: "https://v6.exchangerate-api.com/v6"
 ```
 

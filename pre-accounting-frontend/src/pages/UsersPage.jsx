@@ -29,13 +29,25 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-// Validation schema
+// Validation schema - Dynamic validation based on role
 const userSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters').max(50),
   password: z.string().min(6, 'Password must be at least 6 characters').max(100),
   role: z.enum(['ADMIN', 'CUSTOMER'], { required_error: 'Role is required' }),
   companyId: z.string().optional(),
-})
+}).refine(
+  (data) => {
+    // CUSTOMER users MUST have a company
+    if (data.role === 'CUSTOMER' && (!data.companyId || data.companyId === '')) {
+      return false
+    }
+    return true
+  },
+  {
+    message: 'CUSTOMER users must be linked to a company',
+    path: ['companyId'],
+  }
+)
 
 export function UsersPage() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -116,6 +128,7 @@ export function UsersPage() {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
   } = useForm({
     resolver: zodResolver(userSchema),
     defaultValues: {
@@ -125,6 +138,9 @@ export function UsersPage() {
       companyId: '',
     },
   })
+
+  // Watch role field to conditionally show company requirement
+  const selectedRole = watch('role')
 
   const onSubmit = (data) => {
     createMutation.mutate(data)
@@ -179,7 +195,7 @@ export function UsersPage() {
             <DialogHeader>
               <DialogTitle>Create New User</DialogTitle>
               <DialogDescription>
-                Add a new user to the system. Choose role and optionally link to a company.
+                Add a new user to the system. CUSTOMER users must be linked to a company to access features.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -231,19 +247,33 @@ export function UsersPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="companyId">Company (Optional)</Label>
+                  <Label htmlFor="companyId">
+                    Company {selectedRole === 'CUSTOMER' && <span className="text-red-500">*</span>}
+                    {selectedRole === 'ADMIN' && <span className="text-muted-foreground text-xs">(Not applicable for ADMIN)</span>}
+                  </Label>
                   <select
                     id="companyId"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                     {...register('companyId')}
+                    disabled={selectedRole === 'ADMIN'}
                   >
-                    <option value="">No company</option>
+                    <option value="">
+                      {selectedRole === 'CUSTOMER' ? 'Select a company' : 'No company'}
+                    </option>
                     {companies.map((company) => (
                       <option key={company.id} value={company.id}>
                         {company.name}
                       </option>
                     ))}
                   </select>
+                  {selectedRole === 'CUSTOMER' && (
+                    <p className="text-xs text-muted-foreground">
+                      CUSTOMER users must be linked to a company to access features
+                    </p>
+                  )}
+                  {errors.companyId && (
+                    <p className="text-sm text-red-500">{errors.companyId.message}</p>
+                  )}
                 </div>
               </div>
               <DialogFooter>

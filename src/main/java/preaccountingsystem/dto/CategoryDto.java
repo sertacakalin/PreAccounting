@@ -10,14 +10,12 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class CategoryDto {
     private Long id;
     private String name;
-    private String description;
     private CategoryType type;
-    private Boolean active;
+    private Long companyId;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Plus, Search, TrendingUp, TrendingDown, Edit, Trash2, DollarSign } from 'lucide-react'
+import { Plus, Search, TrendingUp, TrendingDown, Edit, Trash2, DollarSign, FolderPlus } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '@/lib/api'
 import { Button } from '@/components/ui/button'
@@ -28,6 +28,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 // Validation schema
 const incomeExpenseSchema = z.object({
@@ -37,11 +44,17 @@ const incomeExpenseSchema = z.object({
   categoryId: z.coerce.number().min(1, 'Category is required'),
 })
 
+const categorySchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters').max(100),
+  type: z.enum(['INCOME', 'EXPENSE'], { required_error: 'Type is required' }),
+})
+
 export function IncomeExpensePage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [filterType, setFilterType] = useState('all') // all, income, expense
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false)
   const [editingItem, setEditingItem] = useState(null)
   const queryClient = useQueryClient()
 
@@ -58,7 +71,7 @@ export function IncomeExpensePage() {
   const { data: incomeCategories = [] } = useQuery({
     queryKey: ['income-categories'],
     queryFn: async () => {
-      const response = await api.get('/admin/categories/income')
+      const response = await api.get('/categories/income')
       return response.data
     },
   })
@@ -67,8 +80,35 @@ export function IncomeExpensePage() {
   const { data: expenseCategories = [] } = useQuery({
     queryKey: ['expense-categories'],
     queryFn: async () => {
-      const response = await api.get('/admin/categories/expense')
+      const response = await api.get('/categories/expense')
       return response.data
+    },
+  })
+
+  // Category form
+  const categoryForm = useForm({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
+      name: '',
+      type: 'INCOME',
+    },
+  })
+
+  // Create category mutation
+  const createCategoryMutation = useMutation({
+    mutationFn: async (data) => {
+      const response = await api.post('/categories', data)
+      return response.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['income-categories'] })
+      queryClient.invalidateQueries({ queryKey: ['expense-categories'] })
+      toast.success('Category created successfully')
+      setIsCategoryDialogOpen(false)
+      categoryForm.reset()
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || 'Failed to create category')
     },
   })
 
@@ -199,32 +239,51 @@ export function IncomeExpensePage() {
     return (
       <div className="grid gap-4 py-4">
         <div className="space-y-2">
-          <Label htmlFor="categoryId">
-            Category <span className="text-red-500">*</span>
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="categoryId">
+              Category <span className="text-red-500">*</span>
+            </Label>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsCategoryDialogOpen(true)}
+              className="h-auto p-1 text-xs"
+            >
+              <FolderPlus className="h-3 w-3 mr-1" />
+              New Category
+            </Button>
+          </div>
           <select
             id="categoryId"
             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             {...form.register('categoryId')}
           >
             <option value="">Select a category</option>
-            <optgroup label="Income Categories">
-              {incomeCategories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </optgroup>
-            <optgroup label="Expense Categories">
-              {expenseCategories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </optgroup>
+            {incomeCategories.length > 0 && (
+              <optgroup label="Income Categories">
+                {incomeCategories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+            {expenseCategories.length > 0 && (
+              <optgroup label="Expense Categories">
+                {expenseCategories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </optgroup>
+            )}
           </select>
           {form.formState.errors.categoryId && (
             <p className="text-sm text-red-500">{form.formState.errors.categoryId.message}</p>
+          )}
+          {incomeCategories.length === 0 && expenseCategories.length === 0 && (
+            <p className="text-xs text-amber-600">No categories available. Please create one first.</p>
           )}
         </div>
 
@@ -456,6 +515,80 @@ export function IncomeExpensePage() {
               </Button>
               <Button type="submit" disabled={updateMutation.isPending}>
                 {updateMutation.isPending ? 'Updating...' : 'Update'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Category Dialog */}
+      <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Create Category</DialogTitle>
+            <DialogDescription>Add a new income or expense category.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={categoryForm.handleSubmit((data) => createCategoryMutation.mutate(data))}>
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="category-name">
+                  Category Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="category-name"
+                  placeholder="e.g., Sales, Rent, Utilities"
+                  {...categoryForm.register('name')}
+                />
+                {categoryForm.formState.errors.name && (
+                  <p className="text-sm text-red-500">{categoryForm.formState.errors.name.message}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category-type">
+                  Type <span className="text-red-500">*</span>
+                </Label>
+                <Select
+                  value={categoryForm.watch('type')}
+                  onValueChange={(value) => categoryForm.setValue('type', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="INCOME">
+                      <div className="flex items-center">
+                        <TrendingUp className="h-4 w-4 mr-2 text-green-600" />
+                        Income
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="EXPENSE">
+                      <div className="flex items-center">
+                        <TrendingDown className="h-4 w-4 mr-2 text-red-600" />
+                        Expense
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                {categoryForm.formState.errors.type && (
+                  <p className="text-sm text-red-500">{categoryForm.formState.errors.type.message}</p>
+                )}
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setIsCategoryDialogOpen(false)
+                  categoryForm.reset()
+                }}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={createCategoryMutation.isPending}>
+                {createCategoryMutation.isPending ? 'Creating...' : 'Create Category'}
               </Button>
             </DialogFooter>
           </form>

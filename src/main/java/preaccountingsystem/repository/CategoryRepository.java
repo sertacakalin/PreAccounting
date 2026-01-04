@@ -9,6 +9,8 @@ import java.util.List;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    List<Category> findByType(CategoryType type);
-    List<Category> findByTypeAndActiveTrue(CategoryType type);
+
+    List<Category> findByCompanyIdAndType(Long companyId, CategoryType type);
+
+    List<Category> findByCompanyId(Long companyId);
 }

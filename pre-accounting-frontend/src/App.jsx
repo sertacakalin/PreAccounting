@@ -14,6 +14,7 @@ import { CustomersPage } from '@/pages/CustomersPage'
 import { InvoicesPage } from '@/pages/InvoicesPage'
 import { IncomeExpensePage } from '@/pages/IncomeExpensePage'
 import { PaymentsPage } from '@/pages/PaymentsPage'
+import { ItemsPage } from '@/pages/ItemsPage'
 import { Toaster } from 'sonner'
 
 const queryClient = new QueryClient()
@@ -53,6 +54,7 @@ function App() {
             >
               <Route index element={<Navigate to="/app/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
+              <Route path="items" element={<ItemsPage />} />
               <Route path="customers" element={<CustomersPage />} />
               <Route path="invoices" element={<InvoicesPage />} />
               <Route path="income-expense" element={<IncomeExpensePage />} />

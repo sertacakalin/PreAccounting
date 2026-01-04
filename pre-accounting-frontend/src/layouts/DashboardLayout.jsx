@@ -12,6 +12,7 @@ import {
   LogOut,
   Menu,
   X,
+  Package,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
@@ -36,6 +37,7 @@ export function DashboardLayout() {
 
   const customerLinks = [
     { to: '/app/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { to: '/app/items', icon: Package, label: 'Items' },
     { to: '/app/customers', icon: Users, label: 'Customers' },
     { to: '/app/invoices', icon: FileText, label: 'Invoices' },
     { to: '/app/income-expense', icon: DollarSign, label: 'Income/Expense' },

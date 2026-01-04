@@ -18,6 +18,4 @@ public class CompanyDto {
     private String taxNo;
     private String address;
     private CompanyStatus status;
-    private Long userId;
-    private String username;
 }

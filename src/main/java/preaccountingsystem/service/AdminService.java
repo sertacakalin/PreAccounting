@@ -81,40 +81,6 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
-    // Commented out - replaced by IncomeExpenseService
-    // public List<InvoiceDto> listInvoicesByCustomerId(Long customerId) {
-    //     if (!customerRepository.existsById(customerId)) {
-    //         throw new ResourceNotFoundException("Customer not found with id: " + customerId);
-    //     }
-    //     return invoiceRepository.findByCustomerId(customerId).stream()
-    //             .map(this::convertToInvoiceDto)
-    //             .collect(Collectors.toList());
-    // }
-
-    // Commented out - replaced by IncomeExpenseService
-    // public SummaryReportResponse summaryReport(LocalDate from, LocalDate to) {
-    //     if (from.isAfter(to)) {
-    //         throw new BusinessException("'From' date cannot be after 'to' date");
-    //     }
-    //
-    //     BigDecimal totalIncome = invoiceRepository.getSumOfAmountByTypeAndDateBetween(InvoiceType.INCOME, from, to);
-    //     BigDecimal totalExpense = invoiceRepository.getSumOfAmountByTypeAndDateBetween(InvoiceType.EXPENSE, from, to);
-    //
-    //     totalIncome = totalIncome == null ? BigDecimal.ZERO : totalIncome;
-    //     totalExpense = totalExpense == null ? BigDecimal.ZERO : totalExpense;
-    //
-    //     BigDecimal netProfit = totalIncome.subtract(totalExpense);
-    //     long invoiceCount = invoiceRepository.countInvoicesByDateBetween(from, to);
-    //
-    //     return SummaryReportResponse.builder()
-    //             .fromDate(from)
-    //             .toDate(to)
-    //             .totalIncome(totalIncome)
-    //             .totalExpense(totalExpense)
-    //             .netProfit(netProfit)
-    //             .invoiceCount(invoiceCount)
-    //             .build();
-    // }
 
     public CompanyDto createCompany(CreateCompanyRequest request) {
         // Check if email already exists
@@ -122,17 +88,7 @@ public class AdminService {
             throw new BusinessException("Company with email " + request.getEmail() + " already exists");
         }
 
-        // Generate password for company user
-        String generatedPassword = generatePassword();
-
-        // Create User for company
-        User user = User.builder()
-                .username(request.getEmail())
-                .password(passwordEncoder.encode(generatedPassword))
-                .role(Role.CUSTOMER)
-                .build();
-
-        // Create Company (Customer)
+        // Create Company (Customer) WITHOUT automatic user creation
         Customer company = Customer.builder()
                 .name(request.getName())
                 .email(request.getEmail())
@@ -140,12 +96,8 @@ public class AdminService {
                 .taxNo(request.getTaxNo())
                 .address(request.getAddress())
                 .status(CompanyStatus.ACTIVE)
-                .user(user)
                 .build();
 
-        user.setCustomer(company);
-
-        User savedUser = userRepository.save(user);
         Customer savedCompany = customerRepository.save(company);
 
         return convertToCompanyDto(savedCompany);
@@ -176,8 +128,6 @@ public class AdminService {
                 .taxNo(customer.getTaxNo())
                 .address(customer.getAddress())
                 .status(customer.getStatus())
-                .userId(customer.getUser() != null ? customer.getUser().getId() : null)
-                .username(customer.getUser() != null ? customer.getUser().getUsername() : null)
                 .build();
     }
 
@@ -192,20 +142,6 @@ public class AdminService {
                 .username(customer.getUser() != null ? customer.getUser().getUsername() : "N/A")
                 .build();
     }
-
-    // Commented out - replaced by InvoiceService
-    // private InvoiceDto convertToInvoiceDto(Invoice invoice) {
-    //     return InvoiceDto.builder()
-    //             .id(invoice.getId())
-    //             .customerId(invoice.getCustomer().getId())
-    //             .customerName(invoice.getCustomer().getName())
-    //             .type(invoice.getType())
-    //             .date(invoice.getDate())
-    //             .amount(invoice.getAmount())
-    //             .description(invoice.getDescription())
-    //             .createdAt(invoice.getCreatedAt())
-    //             .build();
-    // }
 
     public List<UserDto> listAllUsers() {
         return userRepository.findAll().stream()
@@ -229,19 +165,16 @@ public class AdminService {
             throw new BusinessException("ADMIN users cannot be linked to a company");
         }
 
-        // Create user
         User user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(request.getRole())
                 .build();
 
-        // Link to company for CUSTOMER users
         if (request.getRole() == Role.CUSTOMER) {
             Customer company = customerRepository.findById(request.getCompanyId())
                     .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + request.getCompanyId()));
 
-            // Check if company already has a user
             if (company.getUser() != null) {
                 throw new BusinessException("Company already has an associated user");
             }
@@ -258,12 +191,10 @@ public class AdminService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        // Only CUSTOMER users can be linked to companies
         if (user.getRole() != Role.CUSTOMER) {
             throw new BusinessException("Only CUSTOMER users can be linked to a company");
         }
 
-        // Unlink from current company if exists
         if (user.getCustomer() != null) {
             Customer oldCompany = user.getCustomer();
             oldCompany.setUser(null);
@@ -271,12 +202,10 @@ public class AdminService {
             customerRepository.save(oldCompany);
         }
 
-        // Link to new company if provided
         if (request.getCompanyId() != null) {
             Customer newCompany = customerRepository.findById(request.getCompanyId())
                     .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + request.getCompanyId()));
 
-            // Check if company already has a user
             if (newCompany.getUser() != null && !newCompany.getUser().getId().equals(userId)) {
                 throw new BusinessException("Company already has an associated user");
             }
@@ -293,19 +222,16 @@ public class AdminService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        // Admin cannot delete their own account
         if (userId.equals(currentAdminId)) {
             throw new BusinessException("You cannot delete your own account");
         }
 
-        // If user has a company, unlink it first
         if (user.getCustomer() != null) {
             Customer company = user.getCustomer();
             company.setUser(null);
             customerRepository.save(company);
         }
 
-        // Hard delete user
         userRepository.delete(user);
     }
 
@@ -313,19 +239,15 @@ public class AdminService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        // Admin cannot demote themselves
         if (userId.equals(currentAdminId) && user.getRole() == Role.ADMIN && request.getRole() == Role.CUSTOMER) {
             throw new BusinessException("You cannot demote yourself from ADMIN to CUSTOMER");
         }
 
-        // If current role is same as requested role, return as is
         if (user.getRole() == request.getRole()) {
             return convertToUserDto(user);
         }
 
-        // Handle role change from CUSTOMER to ADMIN
         if (user.getRole() == Role.CUSTOMER && request.getRole() == Role.ADMIN) {
-            // Unlink from company if linked
             if (user.getCustomer() != null) {
                 Customer company = user.getCustomer();
                 company.setUser(null);
@@ -334,13 +256,11 @@ public class AdminService {
             }
         }
 
-        // Handle role change from ADMIN to CUSTOMER
         if (user.getRole() == Role.ADMIN && request.getRole() == Role.CUSTOMER) {
             // CUSTOMER role doesn't require a company, but it's recommended
             // User can be linked to a company later using PATCH /api/admin/users/{id}/company
         }
 
-        // Update role
         user.setRole(request.getRole());
         User updatedUser = userRepository.save(user);
 

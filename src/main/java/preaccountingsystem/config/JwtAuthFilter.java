@@ -37,6 +37,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String path = request.getServletPath();
 
         boolean isSwaggerPath = SWAGGER_PATHS.stream().anyMatch(path::startsWith);
@@ -60,11 +65,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             if (jwtService.isTokenValid(jwt, userDetails)) {
-                // Check if user's company is PASSIVE (only for CUSTOMER users)
                 if (userDetails instanceof preaccountingsystem.entity.User) {
                     preaccountingsystem.entity.User user = (preaccountingsystem.entity.User) userDetails;
                     if (user.getCustomer() != null &&
-                        user.getCustomer().getStatus() == preaccountingsystem.entity.CompanyStatus.PASSIVE) {
+                            user.getCustomer().getStatus() == preaccountingsystem.entity.CompanyStatus.PASSIVE) {
                         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                         response.setContentType("application/json");
                         response.getWriter().write("{\"error\":\"Company account is deactivated\"}");

@@ -31,6 +31,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/auth/**",
+                                "/api/auth/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
@@ -64,7 +65,9 @@ public class SecurityConfig {
                 "http://209.38.245.17:3000",
                 "http://209.38.245.17",
                 "https://preaccounting.tech",
-                "http://preaccounting.tech"
+                "http://preaccounting.tech",
+                "https://www.preaccounting.tech",
+                "http://www.preaccounting.tech"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));

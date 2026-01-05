@@ -1,6 +1,7 @@
 package preaccountingsystem.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IncomeExpenseService {
@@ -40,11 +42,9 @@ public class IncomeExpenseService {
 
     @Transactional
     public IncomeExpenseDto create(CreateIncomeExpenseRequest request, Long companyId) {
-        // Validate company exists
         Customer company = customerRepository.findById(companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + companyId));
 
-        // Validate category exists
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + request.getCategoryId()));
 
@@ -63,34 +63,28 @@ public class IncomeExpenseService {
 
     @Transactional
     public IncomeExpenseDto uploadReceipt(Long id, MultipartFile file, Long companyId) {
-        // Verify income/expense belongs to company
         IncomeExpense incomeExpense = incomeExpenseRepository.findByIdAndCompanyId(id, companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Income/Expense not found or access denied"));
 
-        // Validate file
         if (file.isEmpty()) {
             throw new BusinessException("File is empty");
         }
 
-        // Validate file size (max 5MB)
         if (file.getSize() > 5 * 1024 * 1024) {
             throw new BusinessException("File size cannot exceed 5MB");
         }
 
-        // Validate file type (images and PDFs)
         String contentType = file.getContentType();
         if (contentType == null || (!contentType.startsWith("image/") && !contentType.equals("application/pdf"))) {
             throw new BusinessException("Only image and PDF files are allowed");
         }
 
         try {
-            // Create upload directory if it doesn't exist
             Path uploadPath = Paths.get(uploadDir);
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
 
-            // Generate unique filename
             String originalFilename = file.getOriginalFilename();
             String extension = originalFilename != null && originalFilename.contains(".")
                     ? originalFilename.substring(originalFilename.lastIndexOf("."))
@@ -98,21 +92,17 @@ public class IncomeExpenseService {
             String filename = UUID.randomUUID().toString() + extension;
             Path filePath = uploadPath.resolve(filename);
 
-            // Save file
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-            // Delete old receipt file if exists
             if (incomeExpense.getReceiptFilePath() != null) {
                 try {
                     Path oldFilePath = Paths.get(incomeExpense.getReceiptFilePath());
                     Files.deleteIfExists(oldFilePath);
                 } catch (IOException e) {
-                    // Log error but don't fail the request
-                    System.err.println("Failed to delete old receipt file: " + e.getMessage());
+                    log.error("Failed to delete old receipt file: {}", e.getMessage());
                 }
             }
 
-            // Update entity with file path
             incomeExpense.setReceiptFilePath(filePath.toString());
             IncomeExpense updated = incomeExpenseRepository.save(incomeExpense);
 
@@ -172,14 +162,12 @@ public class IncomeExpenseService {
         IncomeExpense incomeExpense = incomeExpenseRepository.findByIdAndCompanyId(id, companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Income/Expense not found or access denied"));
 
-        // Delete receipt file if exists
         if (incomeExpense.getReceiptFilePath() != null) {
             try {
                 Path filePath = Paths.get(incomeExpense.getReceiptFilePath());
                 Files.deleteIfExists(filePath);
             } catch (IOException e) {
-                // Log error but don't fail the request
-                System.err.println("Failed to delete receipt file: " + e.getMessage());
+                log.error("Failed to delete receipt file: {}", e.getMessage());
             }
         }
 

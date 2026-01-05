@@ -1,17 +1,15 @@
 package preaccountingsystem.controller;
 
-import preaccountingsystem.dto.*;
-import preaccountingsystem.entity.User;
-import preaccountingsystem.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import preaccountingsystem.dto.*;
+import preaccountingsystem.entity.User;
+import preaccountingsystem.service.AdminService;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -36,20 +34,6 @@ public class AdminController {
     public ResponseEntity<List<CustomerDto>> listCustomers() {
         return ResponseEntity.ok(adminService.listCustomers());
     }
-
-    // Commented out - replaced by IncomeExpenseService
-    // @GetMapping("/invoices")
-    // public ResponseEntity<List<InvoiceDto>> listInvoicesByCustomerId(@RequestParam Long customerId) {
-    //     return ResponseEntity.ok(adminService.listInvoicesByCustomerId(customerId));
-    // }
-
-    // Commented out - replaced by IncomeExpenseService
-    // @GetMapping("/reports/summary")
-    // public ResponseEntity<SummaryReportResponse> getSummaryReport(
-    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-    //         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-    //     return ResponseEntity.ok(adminService.summaryReport(from, to));
-    // }
 
     @GetMapping("/users")
     public ResponseEntity<List<UserDto>> listAllUsers() {

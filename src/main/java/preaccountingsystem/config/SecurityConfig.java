@@ -84,7 +84,9 @@ public class SecurityConfig {
                 "Authorization",
                 "Content-Type",
                 "Accept",
-                "Origin"
+                "Origin","X-Requested-With",
+                "Access-Control-Request-Method",
+                "Access-Control-Request-Headers"
         ));
 
         configuration.setAllowCredentials(true);

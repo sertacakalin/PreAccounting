@@ -44,3 +44,5 @@ currency:
   api:
     key: "" # Optional: Leave empty to use free public API (limited features)
     base-url: "https://v6.exchangerate-api.com/v6"
+    server:
+      forward-headers-strategy: native

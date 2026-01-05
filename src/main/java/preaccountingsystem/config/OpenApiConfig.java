@@ -23,6 +23,10 @@ import org.springframework.context.annotation.Configuration;
         ),
         servers = {
                 @Server(
+                        description = "Production Server (DigitalOcean)",
+                        url = "http://209.38.245.17:8081"
+                ),
+                @Server(
                         description = "Local Environment",
                         url = "http://localhost:8081"
                 )

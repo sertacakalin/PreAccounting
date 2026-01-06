@@ -173,7 +173,7 @@ public class ItemService {
     }
 
     /**
-     * Delete an item (hard delete)
+     * Delete an item
      */
     @Transactional
     public void deleteItem(Long id, Long companyId) {

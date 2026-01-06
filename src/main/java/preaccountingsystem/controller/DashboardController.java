@@ -35,15 +35,13 @@ public class DashboardController {
             throw new BusinessException("User is not associated with any company");
         }
 
-        // Default to current month if dates not provided
         if (startDate == null) {
-            startDate = LocalDate.now().withDayOfMonth(1); // First day of current month
+            startDate = LocalDate.now().withDayOfMonth(1);
         }
         if (endDate == null) {
-            endDate = LocalDate.now(); // Today
+            endDate = LocalDate.now();
         }
 
-        // Validate date range
         if (startDate.isAfter(endDate)) {
             throw new BusinessException("Start date cannot be after end date");
         }
@@ -67,7 +65,6 @@ public class DashboardController {
             throw new BusinessException("User is not associated with any company");
         }
 
-        // Default to last 6 months if dates not provided
         if (startDate == null) {
             startDate = LocalDate.now().minusMonths(6);
         }
@@ -94,7 +91,6 @@ public class DashboardController {
             throw new BusinessException("User is not associated with any company");
         }
 
-        // Default to current month if dates not provided
         if (startDate == null) {
             startDate = LocalDate.now().withDayOfMonth(1);
         }

@@ -26,7 +26,6 @@ public class ApplicationConfig {
         return username -> {
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-            // User entity UserDetails'i implement ediyor, direk döndür
             return (UserDetails) user;
         };
     }

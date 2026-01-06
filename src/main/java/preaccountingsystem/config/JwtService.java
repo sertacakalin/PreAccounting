@@ -79,11 +79,11 @@ public class JwtService {
 
     private Claims extractAllClaims(String token) {
         return Jwts
-                .parser() // JwtParserBuilder döndürür
-                .verifyWith(getSignInKey()) // İmza anahtarını doğrulamak için modern yöntem
-                .build() // JwtParser nesnesini oluşturur
-                .parseSignedClaims(token) // Token'ı ayrıştırır
-                .getPayload(); // Claims nesnesini alır
+                .parser()
+                .verifyWith(getSignInKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
     private SecretKey getSignInKey() {

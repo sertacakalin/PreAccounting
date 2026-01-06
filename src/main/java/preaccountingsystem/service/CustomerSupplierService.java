@@ -29,7 +29,6 @@ public class CustomerSupplierService {
 
     @Transactional
     public CustomerSupplierDto createCustomerSupplier(CreateCustomerSupplierRequest request, Long companyId) {
-        // Validate company exists
         Customer company = customerRepository.findById(companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + companyId));
 
@@ -103,12 +102,10 @@ public class CustomerSupplierService {
 
     @Transactional(readOnly = true)
     public CustomerStatementDto getCustomerStatement(Long customerId, LocalDate from, LocalDate to, Long companyId) {
-        // Verify customer belongs to company
         CustomerSupplier customerSupplier = customerSupplierRepository.findByIdAndCompanyId(customerId, companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found or access denied"));
 
-        // For now, return a placeholder statement
-        // This would be connected to invoices/transactions in a real implementation
+
         return CustomerStatementDto.builder()
                 .customerId(customerSupplier.getId())
                 .customerName(customerSupplier.getName())

@@ -35,22 +35,18 @@ public class AdminService {
     }
 
     public CreateCustomerResponse createCustomer(CreateCustomerRequest request) {
-        // Email'in benzersiz olup olmadığını kontrol et
         if (customerRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new BusinessException("Customer with email " + request.getEmail() + " already exists");
         }
 
-        // Otomatik şifre oluştur
         String generatedPassword = generatePassword();
 
-        // User oluştur
         User user = User.builder()
                 .username(request.getEmail())
                 .password(passwordEncoder.encode(generatedPassword))
                 .role(Role.CUSTOMER)
                 .build();
 
-        // Customer oluştur
         Customer customer = Customer.builder()
                 .name(request.getName())
                 .email(request.getEmail())
@@ -83,12 +79,10 @@ public class AdminService {
 
 
     public CompanyDto createCompany(CreateCompanyRequest request) {
-        // Check if email already exists
         if (customerRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new BusinessException("Company with email " + request.getEmail() + " already exists");
         }
 
-        // Create Company (Customer) WITHOUT automatic user creation
         Customer company = Customer.builder()
                 .name(request.getName())
                 .email(request.getEmail())
@@ -150,17 +144,14 @@ public class AdminService {
     }
 
     public UserDto createUser(CreateUserRequest request) {
-        // Check if username already exists
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new BusinessException("Username " + request.getUsername() + " already exists");
         }
 
-        // CUSTOMER users MUST have a company
         if (request.getRole() == Role.CUSTOMER && request.getCompanyId() == null) {
             throw new BusinessException("CUSTOMER users must be linked to a company. Please select a company.");
         }
 
-        // ADMIN users cannot have a company
         if (request.getRole() == Role.ADMIN && request.getCompanyId() != null) {
             throw new BusinessException("ADMIN users cannot be linked to a company");
         }
@@ -257,8 +248,6 @@ public class AdminService {
         }
 
         if (user.getRole() == Role.ADMIN && request.getRole() == Role.CUSTOMER) {
-            // CUSTOMER role doesn't require a company, but it's recommended
-            // User can be linked to a company later using PATCH /api/admin/users/{id}/company
         }
 
         user.setRole(request.getRole());

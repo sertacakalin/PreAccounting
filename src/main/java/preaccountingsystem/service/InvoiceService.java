@@ -106,12 +106,10 @@ public class InvoiceService {
         Invoice invoice = invoiceRepository.findByIdAndCompanyId(id, companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found or access denied"));
 
-        // Validate invoice is not already cancelled
         if (invoice.getStatus() == InvoiceStatus.CANCELLED) {
             throw new BusinessException("Invoice is already cancelled");
         }
 
-        // Validate invoice is not paid
         if (invoice.getStatus() == InvoiceStatus.PAID) {
             throw new BusinessException("Cannot cancel a paid invoice");
         }
@@ -126,12 +124,10 @@ public class InvoiceService {
         Invoice invoice = invoiceRepository.findByIdAndCompanyId(id, companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found or access denied"));
 
-        // Validate invoice is not cancelled
         if (invoice.getStatus() == InvoiceStatus.CANCELLED) {
             throw new BusinessException("Cannot mark a cancelled invoice as paid");
         }
 
-        // Validate invoice is not already paid
         if (invoice.getStatus() == InvoiceStatus.PAID) {
             throw new BusinessException("Invoice is already paid");
         }
@@ -142,7 +138,6 @@ public class InvoiceService {
     }
 
     private String generateInvoiceNumber(Long companyId) {
-        // Get system settings for invoice number format
         SystemSettings settings = systemSettingsRepository.findById(1L)
                 .orElseThrow(() -> new BusinessException("System settings not found"));
 
@@ -151,10 +146,8 @@ public class InvoiceService {
             format = "INV-{YEAR}-{SEQUENCE}"; // Default format
         }
 
-        // Get the current year
         int currentYear = Year.now().getValue();
 
-        // Find the last invoice for this company to determine next sequence number
         List<Invoice> latestInvoices = invoiceRepository.findLatestByCompanyId(companyId);
         int nextSequence = 1;
 
@@ -162,8 +155,7 @@ public class InvoiceService {
             Invoice lastInvoice = latestInvoices.get(0);
             String lastNumber = lastInvoice.getInvoiceNumber();
 
-            // Extract sequence number from last invoice number
-            // This is a simple implementation - extract the last numeric part
+
             String[] parts = lastNumber.split("-");
             if (parts.length > 0) {
                 try {
@@ -177,12 +169,10 @@ public class InvoiceService {
             }
         }
 
-        // Generate invoice number using format
         String invoiceNumber = format
                 .replace("{YEAR}", String.valueOf(currentYear))
                 .replace("{SEQUENCE}", String.format("%05d", nextSequence)); // 5-digit sequence with leading zeros
 
-        // Verify uniqueness
         while (invoiceRepository.findByInvoiceNumber(invoiceNumber).isPresent()) {
             nextSequence++;
             invoiceNumber = format

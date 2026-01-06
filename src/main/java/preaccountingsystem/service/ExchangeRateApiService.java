@@ -63,7 +63,6 @@ public class ExchangeRateApiService {
             JsonNode ratesNode = root.path("rates");
 
             if (ratesNode.isMissingNode()) {
-                // Try alternative structure for free API
                 ratesNode = root.path("conversion_rates");
             }
 
@@ -143,7 +142,6 @@ public class ExchangeRateApiService {
                 }
             }
 
-            // Fallback: use latest rates
             Map<String, BigDecimal> rates = fetchLatestRates(fromCurrency);
             return rates.get(toCurrency);
 

@@ -29,7 +29,6 @@ public class CustomerSupplierController {
             @Valid @RequestBody CreateCustomerSupplierRequest request,
             @AuthenticationPrincipal User currentUser) {
 
-        // Ensure user has a company
         if (currentUser.getCustomer() == null) {
             throw new BusinessException("User is not associated with any company");
         }

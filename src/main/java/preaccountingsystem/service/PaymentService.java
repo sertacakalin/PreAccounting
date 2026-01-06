@@ -26,16 +26,13 @@ public class PaymentService {
 
     @Transactional
     public PaymentDto createPayment(CreatePaymentRequest request, Long companyId) {
-        // Validate company exists
         Customer company = customerRepository.findById(companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + companyId));
 
-        // Validate customer/supplier exists and belongs to company
         CustomerSupplier customerSupplier = customerSupplierRepository.findByIdAndCompanyId(
                 request.getCustomerSupplierId(), companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer/Supplier not found or access denied"));
 
-        // Validate payment type matches customer/supplier type
         if (request.getType() == PaymentType.COLLECTION && !customerSupplier.getIsCustomer()) {
             throw new BusinessException("Collections can only be made from customers, not suppliers");
         }
@@ -45,21 +42,17 @@ public class PaymentService {
 
         Invoice invoice = null;
         if (request.getInvoiceId() != null) {
-            // Validate invoice exists and belongs to company
             invoice = invoiceRepository.findByIdAndCompanyId(request.getInvoiceId(), companyId)
                     .orElseThrow(() -> new ResourceNotFoundException("Invoice not found or access denied"));
 
-            // Validate invoice belongs to the same customer/supplier
             if (!invoice.getCustomerSupplier().getId().equals(request.getCustomerSupplierId())) {
                 throw new BusinessException("Invoice does not belong to the specified customer/supplier");
             }
 
-            // Validate invoice is not cancelled
             if (invoice.getStatus() == InvoiceStatus.CANCELLED) {
                 throw new BusinessException("Cannot make payment for a cancelled invoice");
             }
 
-            // Validate payment doesn't exceed remaining balance
             BigDecimal totalPaid = paymentRepository.getTotalPaymentsByInvoiceId(invoice.getId());
             BigDecimal remainingBalance = invoice.getTotalAmount().subtract(totalPaid);
 
@@ -68,7 +61,6 @@ public class PaymentService {
             }
         }
 
-        // Create payment
         Payment payment = Payment.builder()
                 .type(request.getType())
                 .amount(request.getAmount())
@@ -83,7 +75,6 @@ public class PaymentService {
 
         Payment saved = paymentRepository.save(payment);
 
-        // Update invoice status if fully paid
         if (invoice != null) {
             updateInvoiceStatus(invoice);
         }
@@ -120,7 +111,6 @@ public class PaymentService {
 
     @Transactional(readOnly = true)
     public List<PaymentDto> getPaymentsByInvoice(Long invoiceId, Long companyId) {
-        // Verify invoice belongs to company
         Invoice invoice = invoiceRepository.findByIdAndCompanyId(invoiceId, companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Invoice not found or access denied"));
 
@@ -132,7 +122,6 @@ public class PaymentService {
     private void updateInvoiceStatus(Invoice invoice) {
         BigDecimal totalPaid = paymentRepository.getTotalPaymentsByInvoiceId(invoice.getId());
 
-        // If total paid equals or exceeds invoice total, mark as paid
         if (totalPaid.compareTo(invoice.getTotalAmount()) >= 0 &&
             invoice.getStatus() != InvoiceStatus.PAID) {
             invoice.setStatus(InvoiceStatus.PAID);

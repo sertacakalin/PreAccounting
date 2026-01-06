@@ -40,7 +40,6 @@ public class AuthService {
             throw new UnauthorizedException("Your company account has been deactivated. Please contact the administrator.");
         }
 
-        // User entity zaten UserDetails'i implement ediyor
         String jwtToken = jwtService.generateToken(user);
 
         Long customerId = null;

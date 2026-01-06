@@ -27,27 +27,21 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public DashboardDto getDashboard(Long companyId, LocalDate startDate, LocalDate endDate) {
-        // Validate company exists
         customerRepository.findById(companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + companyId));
 
-        // Calculate summary metrics
         BigDecimal totalIncome = incomeExpenseRepository.sumByCompanyIdAndCategoryTypeAndDateBetween(
                 companyId, CategoryType.INCOME, startDate, endDate);
         BigDecimal totalExpense = incomeExpenseRepository.sumByCompanyIdAndCategoryTypeAndDateBetween(
                 companyId, CategoryType.EXPENSE, startDate, endDate);
         BigDecimal netProfit = totalIncome.subtract(totalExpense);
 
-        // Get monthly data
         List<MonthlyIncomeExpenseDto> monthlyData = getMonthlyIncomeExpense(companyId, startDate, endDate);
 
-        // Get expense distribution
         List<ExpenseDistributionDto> expenseDistribution = getExpenseDistribution(companyId, startDate, endDate);
 
-        // Get unpaid invoices
         List<UnpaidInvoiceSummaryDto> unpaidInvoices = getUnpaidInvoices(companyId);
 
-        // Calculate unpaid invoice summary
         Integer totalUnpaidInvoices = unpaidInvoices.size();
         BigDecimal totalUnpaidAmount = unpaidInvoices.stream()
                 .map(UnpaidInvoiceSummaryDto::getRemainingBalance)
@@ -67,11 +61,9 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public List<MonthlyIncomeExpenseDto> getMonthlyIncomeExpense(Long companyId, LocalDate startDate, LocalDate endDate) {
-        // Get all income/expense records within the date range
         List<IncomeExpense> records = incomeExpenseRepository.findByCompanyIdAndDateBetween(
                 companyId, startDate, endDate);
 
-        // Group by month
         Map<YearMonth, Map<CategoryType, BigDecimal>> monthlyMap = new TreeMap<>();
 
         for (IncomeExpense record : records) {
@@ -83,7 +75,6 @@ public class DashboardService {
             monthlyMap.get(month).put(type, currentAmount.add(record.getAmount()));
         }
 
-        // Convert to DTOs
         return monthlyMap.entrySet().stream()
                 .map(entry -> {
                     YearMonth month = entry.getKey();
@@ -106,19 +97,16 @@ public class DashboardService {
     public List<ExpenseDistributionDto> getExpenseDistribution(Long companyId, LocalDate startDate, LocalDate endDate) {
         List<Object[]> results = incomeExpenseRepository.getExpenseDistribution(companyId, startDate, endDate);
 
-        // Calculate total expenses
         BigDecimal totalExpenses = results.stream()
                 .map(row -> (BigDecimal) row[2])
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // Convert to DTOs with percentage
         return results.stream()
                 .map(row -> {
                     Long categoryId = (Long) row[0];
                     String categoryName = (String) row[1];
                     BigDecimal amount = (BigDecimal) row[2];
 
-                    // Calculate percentage
                     Double percentage = 0.0;
                     if (totalExpenses.compareTo(BigDecimal.ZERO) > 0) {
                         percentage = amount.divide(totalExpenses, 4, RoundingMode.HALF_UP)
@@ -143,11 +131,9 @@ public class DashboardService {
 
         return unpaidInvoices.stream()
                 .map(invoice -> {
-                    // Calculate total paid
                     BigDecimal totalPaid = paymentRepository.getTotalPaymentsByInvoiceId(invoice.getId());
                     BigDecimal remainingBalance = invoice.getTotalAmount().subtract(totalPaid);
 
-                    // Calculate days overdue
                     Integer daysOverdue = null;
                     if (invoice.getDueDate() != null && invoice.getDueDate().isBefore(today)) {
                         daysOverdue = (int) ChronoUnit.DAYS.between(invoice.getDueDate(), today);

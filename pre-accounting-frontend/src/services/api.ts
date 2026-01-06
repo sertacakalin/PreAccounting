@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/', // Proxy will handle the redirection
+    baseURL: '',
 });
 
 api.interceptors.request.use(

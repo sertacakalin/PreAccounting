@@ -81,7 +81,7 @@ export function AdminDashboard() {
   // Calculate statistics
   const totalUsers = users.length
   const adminUsers = users.filter((u) => u.role === 'ADMIN').length
-  const customerUsers = users.filter((u) => u.role === 'CUSTOMER').length
+  const customerUsers = users.filter((u) => u.role === 'USER').length
 
   const totalCompanies = companies.length
   const activeCompanies = companies.filter((c) => c.status === 'ACTIVE').length
@@ -144,7 +144,7 @@ export function AdminDashboard() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">{user?.username}</span>
+              <span className="text-sm text-muted-foreground">{user?.firstName} {user?.lastName}</span>
               <Button onClick={logout} variant="outline" size="sm">
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -309,7 +309,7 @@ export function AdminDashboard() {
                       <TableBody>
                         {recentUsers.map((user) => (
                             <TableRow key={user.id}>
-                              <TableCell className="font-medium">{user.username}</TableCell>
+                              <TableCell className="font-medium">{user.email}</TableCell>
                               <TableCell>
                                 <Badge variant={user.role === 'ADMIN' ? 'default' : 'secondary'}>
                                   {user.role}

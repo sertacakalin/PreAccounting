@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     // Restore auth state from localStorage on mount
-    const storedUser = getUser<User>()
+    const storedUser = getUser()
     const token = getToken()
 
     if (storedUser && token) {
@@ -46,25 +46,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Store token and user data
       setToken(response.token)
-      const userData: User = {
-        username: response.username,
-        role: response.role,
-      }
-      storeUser(userData)
-      setUserState(userData)
+      storeUser(response.user)
+      setUserState(response.user)
 
       // Show success message
-      toast.success(`Welcome back, ${response.username}!`)
+      toast.success(`Welcome back, ${response.user.firstName}!`)
 
       // Redirect based on role
-      if (response.role === 'ADMIN') {
+      if (response.user.role === 'ADMIN') {
         navigate(ROUTES.ADMIN_DASHBOARD)
-      } else if (response.role === 'CUSTOMER') {
+      } else if (response.user.role === 'USER') {
         navigate(ROUTES.CUSTOMER_DASHBOARD)
       }
     } catch (error: any) {
       console.error('Login failed:', error)
-      const errorMessage = error.response?.data?.message || 'Invalid username or password'
+      const errorMessage = error.response?.data?.message || 'Invalid email or password'
       toast.error(errorMessage)
       throw error // Re-throw for component to handle
     }
@@ -84,7 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout,
     isAdmin: user?.role === 'ADMIN',
-    isCustomer: user?.role === 'CUSTOMER',
+    isCustomer: user?.role === 'USER',
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

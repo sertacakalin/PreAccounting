@@ -46,7 +46,7 @@ import {
 const incomeExpenseSchema = z.object({
   amount: z.number().min(0.01, 'Amount must be greater than 0'),
   date: z.string().min(1, 'Date is required'),
-  description: z.string().max(500).optional(),
+  description: z.string().max(500).or(z.literal('')),
   categoryId: z.number().min(1, 'Category is required'),
 })
 
@@ -164,7 +164,11 @@ export function IncomeExpensePage() {
 
   // Handlers
   const onCreateSubmit = (data: IncomeExpenseFormData) => {
-    createMutation.mutate(data)
+    const cleanedData = {
+      ...data,
+      description: data.description === '' ? undefined : data.description,
+    }
+    createMutation.mutate(cleanedData)
   }
 
   const onEditSubmit = (data: IncomeExpenseFormData) => {
@@ -193,22 +197,22 @@ export function IncomeExpensePage() {
   // Filter items
   const filteredItems = items
     .filter((item) => {
-      if (filterType === 'income') return item.categoryType === 'INCOME'
-      if (filterType === 'expense') return item.categoryType === 'EXPENSE'
+      if (filterType === 'income') return item.category?.type === 'INCOME'
+      if (filterType === 'expense') return item.category?.type === 'EXPENSE'
       return true
     })
     .filter((item) =>
       item.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.categoryName?.toLowerCase().includes(searchTerm.toLowerCase())
+      item.category?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
   // Calculate totals
   const totalIncome = items
-    .filter((i) => i.categoryType === 'INCOME')
+    .filter((i) => i.category?.type === 'INCOME')
     .reduce((sum, i) => sum + i.amount, 0)
 
   const totalExpense = items
-    .filter((i) => i.categoryType === 'EXPENSE')
+    .filter((i) => i.category?.type === 'EXPENSE')
     .reduce((sum, i) => sum + i.amount, 0)
 
   const netProfit = totalIncome - totalExpense
@@ -234,7 +238,7 @@ export function IncomeExpensePage() {
             </div>
             <div>
               <h1 className="text-lg font-bold">Income & Expense</h1>
-              <p className="text-xs text-muted-foreground">Welcome, {user?.username}</p>
+              <p className="text-xs text-muted-foreground">Welcome, {user?.firstName} {user?.lastName}</p>
             </div>
           </div>
           <Button onClick={logout} variant="outline" size="sm">
@@ -335,23 +339,23 @@ export function IncomeExpensePage() {
                 {filteredItems.map((item) => (
                   <TableRow key={item.id}>
                     <TableCell>{new Date(item.date).toLocaleDateString()}</TableCell>
-                    <TableCell>{item.categoryName}</TableCell>
+                    <TableCell>{item.category?.name}</TableCell>
                     <TableCell>{item.description || '-'}</TableCell>
                     <TableCell>
-                      <Badge variant={item.categoryType === 'INCOME' ? 'success' : 'destructive'}>
-                        {item.categoryType === 'INCOME' ? (
+                      <Badge variant={item.category?.type === 'INCOME' ? 'success' : 'destructive'}>
+                        {item.category?.type === 'INCOME' ? (
                           <TrendingUp className="h-3 w-3 mr-1 inline" />
                         ) : (
                           <TrendingDown className="h-3 w-3 mr-1 inline" />
                         )}
-                        {item.categoryType}
+                        {item.category?.type}
                       </Badge>
                     </TableCell>
                     <TableCell>
                       <span
-                        className={item.categoryType === 'INCOME' ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}
+                        className={item.category?.type === 'INCOME' ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}
                       >
-                        {item.categoryType === 'INCOME' ? '+' : '-'}${item.amount.toFixed(2)}
+                        {item.category?.type === 'INCOME' ? '+' : '-'}${item.amount.toFixed(2)}
                       </span>
                     </TableCell>
                     <TableCell className="text-right space-x-2">

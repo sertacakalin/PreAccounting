@@ -42,13 +42,7 @@ const customerSchema = z.object({
   phone: z.string().optional(),
   taxNo: z.string().optional(),
   address: z.string().optional(),
-}).transform((data) => ({
-  ...data,
-  email: data.email === '' ? undefined : data.email,
-  phone: data.phone === '' ? undefined : data.phone,
-  taxNo: data.taxNo === '' ? undefined : data.taxNo,
-  address: data.address === '' ? undefined : data.address,
-}))
+})
 
 type CustomerFormData = z.infer<typeof customerSchema>
 
@@ -124,12 +118,26 @@ export function CustomersPage() {
 
   // Handlers
   const onCreateSubmit = (data: CustomerFormData) => {
-    createMutation.mutate(data)
+    const cleanedData = {
+      ...data,
+      email: data.email === '' ? undefined : data.email,
+      phone: data.phone === '' ? undefined : data.phone,
+      taxNo: data.taxNo === '' ? undefined : data.taxNo,
+      address: data.address === '' ? undefined : data.address,
+    }
+    createMutation.mutate(cleanedData)
   }
 
   const onEditSubmit = (data: CustomerFormData) => {
     if (editingCustomer) {
-      updateMutation.mutate({ id: editingCustomer.id, data })
+      const cleanedData = {
+        ...data,
+        email: data.email === '' ? undefined : data.email,
+        phone: data.phone === '' ? undefined : data.phone,
+        taxNo: data.taxNo === '' ? undefined : data.taxNo,
+        address: data.address === '' ? undefined : data.address,
+      }
+      updateMutation.mutate({ id: editingCustomer.id, data: cleanedData })
     }
   }
 
@@ -176,126 +184,125 @@ export function CustomersPage() {
 
   return (
     <div className="space-y-6">
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card>
-            <CardContent className="p-6">
-              <p className="text-sm font-medium text-muted-foreground">Total Customers</p>
-              <p className="text-2xl font-bold text-success">{totalCustomers}</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <p className="text-sm font-medium text-muted-foreground">Total Suppliers</p>
-              <p className="text-2xl font-bold text-primary">{totalSuppliers}</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Filters */}
-        <div className="flex gap-2">
-          <Button
-            variant={filterType === 'all' ? 'default' : 'outline'}
-            onClick={() => setFilterType('all')}
-          >
-            All ({customers.length})
-          </Button>
-          <Button
-            variant={filterType === 'CUSTOMER' ? 'default' : 'outline'}
-            onClick={() => setFilterType('CUSTOMER')}
-          >
-            Customers ({totalCustomers})
-          </Button>
-          <Button
-            variant={filterType === 'SUPPLIER' ? 'default' : 'outline'}
-            onClick={() => setFilterType('SUPPLIER')}
-          >
-            Suppliers ({totalSuppliers})
-          </Button>
-        </div>
-
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search by name, email, or tax no..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Contact
-          </Button>
-        </div>
-
-        {/* Table */}
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
           <CardContent className="p-6">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Tax No</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredCustomers.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground">
-                      No contacts found
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredCustomers.map((customer) => (
-                    <TableRow key={customer.id}>
-                      <TableCell className="font-medium">{customer.name}</TableCell>
-                      <TableCell>
-                        <Badge variant={customer.type === 'CUSTOMER' ? 'default' : 'secondary'}>
-                          {customer.type}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {customer.email || 'N/A'}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {customer.phone || 'N/A'}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {customer.taxNo || 'N/A'}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(customer)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(customer.id, customer.name)}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
+            <p className="text-sm font-medium text-muted-foreground">Total Customers</p>
+            <p className="text-2xl font-bold text-success">{totalCustomers}</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <p className="text-sm font-medium text-muted-foreground">Total Suppliers</p>
+            <p className="text-2xl font-bold text-primary">{totalSuppliers}</p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Filters */}
+      <div className="flex gap-2">
+        <Button
+          variant={filterType === 'all' ? 'default' : 'outline'}
+          onClick={() => setFilterType('all')}
+        >
+          All ({customers.length})
+        </Button>
+        <Button
+          variant={filterType === 'CUSTOMER' ? 'default' : 'outline'}
+          onClick={() => setFilterType('CUSTOMER')}
+        >
+          Customers ({totalCustomers})
+        </Button>
+        <Button
+          variant={filterType === 'SUPPLIER' ? 'default' : 'outline'}
+          onClick={() => setFilterType('SUPPLIER')}
+        >
+          Suppliers ({totalSuppliers})
+        </Button>
+      </div>
+
+      {/* Actions */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search by name, email, or tax no..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Contact
+        </Button>
+      </div>
+
+      {/* Table */}
+      <Card>
+        <CardContent className="p-6">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Tax No</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredCustomers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-muted-foreground">
+                    No contacts found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredCustomers.map((customer) => (
+                  <TableRow key={customer.id}>
+                    <TableCell className="font-medium">{customer.name}</TableCell>
+                    <TableCell>
+                      <Badge variant={customer.type === 'CUSTOMER' ? 'default' : 'secondary'}>
+                        {customer.type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {customer.email || 'N/A'}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {customer.phone || 'N/A'}
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {customer.taxNo || 'N/A'}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEdit(customer)}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDelete(customer.id, customer.name)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       {/* Create Dialog */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>

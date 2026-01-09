@@ -4,8 +4,12 @@
 
 export interface UserDto {
   id: number
-  username: string
-  role: 'ADMIN' | 'CUSTOMER'
+  username?: string
+  email: string
+  firstName?: string
+  lastName?: string
+  role: 'ADMIN' | 'USER'
+  companyId?: number
   customerId?: number
   customerName?: string
   createdAt: string

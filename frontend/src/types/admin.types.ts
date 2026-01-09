@@ -5,7 +5,7 @@
 export interface UserDto {
   id: number
   username: string
-  role: 'ADMIN' | 'USER'
+  role: 'ADMIN' | 'CUSTOMER'
   companyId?: number
   customerId?: number
   customerName?: string

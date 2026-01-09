@@ -21,7 +21,7 @@ export function ProtectedRoute({ children, requireAdmin = false, requireCustomer
   }
 
   if (!isAuthenticated) {
-    return <Navigate to={ROUTES.HOME} replace />
+    return <Navigate to={ROUTES.LOGIN} replace />
   }
 
   if (requireAdmin && !isAdmin) {

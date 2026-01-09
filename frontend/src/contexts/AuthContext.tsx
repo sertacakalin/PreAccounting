@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Redirect based on role
       if (response.role === 'ADMIN') {
         navigate(ROUTES.ADMIN_DASHBOARD)
-      } else if (response.role === 'USER') {
+      } else if (response.role === 'CUSTOMER') {
         navigate(ROUTES.CUSTOMER_DASHBOARD)
       }
     } catch (error: any) {
@@ -86,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout,
     isAdmin: user?.role === 'ADMIN',
-    isCustomer: user?.role === 'USER',
+    isCustomer: user?.role === 'CUSTOMER',
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

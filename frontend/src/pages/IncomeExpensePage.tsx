@@ -3,7 +3,7 @@
  * Full CRUD with category management
  */
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -194,8 +194,22 @@ export function IncomeExpensePage() {
     }
   }
 
+  const categoryById = useMemo(() => {
+    const map = new Map<number, (typeof incomeCategories)[number] | (typeof expenseCategories)[number]>()
+    incomeCategories.forEach((cat) => map.set(cat.id, cat))
+    expenseCategories.forEach((cat) => map.set(cat.id, cat))
+    return map
+  }, [incomeCategories, expenseCategories])
+
+  const enrichedItems = useMemo(() => {
+    return items.map((item) => ({
+      ...item,
+      category: item.category ?? categoryById.get(item.categoryId),
+    }))
+  }, [items, categoryById])
+
   // Filter items
-  const filteredItems = items
+  const filteredItems = enrichedItems
     .filter((item) => {
       if (filterType === 'income') return item.category?.type === 'INCOME'
       if (filterType === 'expense') return item.category?.type === 'EXPENSE'
@@ -206,14 +220,19 @@ export function IncomeExpensePage() {
       item.category?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     )
 
-  // Calculate totals
-  const totalIncome = items
-    .filter((i) => i.category?.type === 'INCOME')
-    .reduce((sum, i) => sum + i.amount, 0)
+  const getAmount = (value: number | string | null | undefined) => {
+    const parsed = typeof value === 'number' ? value : Number(value)
+    return Number.isFinite(parsed) ? parsed : 0
+  }
 
-  const totalExpense = items
+  // Calculate totals
+  const totalIncome = enrichedItems
+    .filter((i) => i.category?.type === 'INCOME')
+    .reduce((sum, i) => sum + getAmount(i.amount), 0)
+
+  const totalExpense = enrichedItems
     .filter((i) => i.category?.type === 'EXPENSE')
-    .reduce((sum, i) => sum + i.amount, 0)
+    .reduce((sum, i) => sum + getAmount(i.amount), 0)
 
   const netProfit = totalIncome - totalExpense
 
@@ -267,7 +286,7 @@ export function IncomeExpensePage() {
           </Card>
           <Card className="p-4">
             <div className="text-sm text-muted-foreground">Total Records</div>
-            <div className="text-2xl font-bold mt-1">{items.length}</div>
+            <div className="text-2xl font-bold mt-1">{enrichedItems.length}</div>
           </Card>
         </div>
 
@@ -355,7 +374,7 @@ export function IncomeExpensePage() {
                       <span
                         className={item.category?.type === 'INCOME' ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}
                       >
-                        {item.category?.type === 'INCOME' ? '+' : '-'}${item.amount.toFixed(2)}
+                        {item.category?.type === 'INCOME' ? '+' : '-'}${getAmount(item.amount).toFixed(2)}
                       </span>
                     </TableCell>
                     <TableCell className="text-right space-x-2">

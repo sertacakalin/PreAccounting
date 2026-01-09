@@ -81,7 +81,7 @@ export function AdminDashboard() {
   // Calculate statistics
   const totalUsers = users.length
   const adminUsers = users.filter((u) => u.role === 'ADMIN').length
-  const customerUsers = users.filter((u) => u.role === 'USER').length
+  const customerUsers = users.filter((u) => u.role === 'CUSTOMER').length
 
   const totalCompanies = companies.length
   const activeCompanies = companies.filter((c) => c.status === 'ACTIVE').length

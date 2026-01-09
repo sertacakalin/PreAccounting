@@ -10,6 +10,7 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { AdminLayout } from '@/components/admin/AdminLayout'
 import { CustomerLayout } from '@/components/customer/CustomerLayout'
 import { LandingPage } from '@/pages/LandingPage'
+import { LoginPage } from '@/pages/LoginPage'
 import { AdminDashboard } from '@/pages/AdminDashboard'
 import { UserManagement } from '@/pages/UserManagement'
 import { CompanyManagement } from '@/pages/CompanyManagement'
@@ -41,6 +42,7 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path={ROUTES.HOME} element={<LandingPage />} />
+            <Route path={ROUTES.LOGIN} element={<LoginPage />} />
 
             {/* Admin Routes */}
             <Route

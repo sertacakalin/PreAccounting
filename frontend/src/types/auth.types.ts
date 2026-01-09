@@ -1,7 +1,7 @@
 export interface User {
   id: number
   username: string
-  role: 'ADMIN' | 'USER'
+  role: 'ADMIN' | 'CUSTOMER'
   customerId?: number
 }
 
@@ -22,6 +22,6 @@ export interface AuthResponse {
   token: string
   userId: number
   username: string
-  role: 'ADMIN' | 'USER'
+  role: 'ADMIN' | 'CUSTOMER'
   customerId?: number
 }

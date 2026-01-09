@@ -477,7 +477,7 @@ export function IncomeExpensePage() {
               <textarea
                 id="create-description"
                 rows={3}
-                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex w-full rounded-md border border-input bg-muted/40 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 {...createForm.register('description')}
               />
             </div>
@@ -561,7 +561,7 @@ export function IncomeExpensePage() {
               <textarea
                 id="edit-description"
                 rows={3}
-                className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex w-full rounded-md border border-input bg-muted/40 px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 {...editForm.register('description')}
               />
             </div>

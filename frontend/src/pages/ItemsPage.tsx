@@ -37,11 +37,21 @@ import {
 // Validation schema
 const itemSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
-  code: z.string().optional(),
-  description: z.string().optional(),
-  price: z.number().min(0, 'Price must be positive'),
-  unit: z.string().optional(),
-  stockQuantity: z.number().min(0, 'Stock cannot be negative').optional(),
+  description: z.string().max(500).optional().or(z.literal('')),
+  type: z.enum(['PRODUCT', 'SERVICE']),
+  category: z.string().min(2, 'Category must be at least 2 characters'),
+  stock: z.number().min(0, 'Stock cannot be negative').optional(),
+  salePrice: z.number().min(0, 'Sale price must be positive'),
+  purchasePrice: z.number().min(0, 'Purchase price must be positive'),
+  status: z.enum(['ACTIVE', 'PASSIVE']),
+}).superRefine((data, ctx) => {
+  if (data.type === 'PRODUCT' && (data.stock === undefined || Number.isNaN(data.stock))) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Stock is required for products',
+      path: ['stock'],
+    })
+  }
 })
 
 type ItemFormData = z.infer<typeof itemSchema>
@@ -65,11 +75,13 @@ export function ItemsPage() {
     resolver: zodResolver(itemSchema),
     defaultValues: {
       name: '',
-      code: '',
       description: '',
-      price: 0,
-      unit: '',
-      stockQuantity: 0,
+      type: 'PRODUCT',
+      category: '',
+      stock: 0,
+      salePrice: 0,
+      purchasePrice: 0,
+      status: 'ACTIVE',
     },
   })
 
@@ -118,12 +130,22 @@ export function ItemsPage() {
 
   // Handlers
   const onCreateSubmit = (data: ItemFormData) => {
-    createMutation.mutate(data)
+    const payload = {
+      ...data,
+      description: data.description === '' ? undefined : data.description,
+      stock: data.type === 'SERVICE' ? undefined : data.stock ?? 0,
+    }
+    createMutation.mutate(payload)
   }
 
   const onEditSubmit = (data: ItemFormData) => {
     if (editingItem) {
-      updateMutation.mutate({ id: editingItem.id, data })
+      const payload = {
+        ...data,
+        description: data.description === '' ? undefined : data.description,
+        stock: data.type === 'SERVICE' ? undefined : data.stock ?? 0,
+      }
+      updateMutation.mutate({ id: editingItem.id, data: payload })
     }
   }
 
@@ -131,11 +153,13 @@ export function ItemsPage() {
     setEditingItem(item)
     editForm.reset({
       name: item.name,
-      code: item.code || '',
       description: item.description || '',
-      price: item.price,
-      unit: item.unit || '',
-      stockQuantity: item.stockQuantity || 0,
+      type: item.type,
+      category: item.category,
+      stock: item.stock ?? 0,
+      salePrice: item.salePrice,
+      purchasePrice: item.purchasePrice,
+      status: item.status,
     })
     setIsEditDialogOpen(true)
   }
@@ -149,12 +173,13 @@ export function ItemsPage() {
   // Filter items
   const filteredItems = items.filter((item) =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.code?.toLowerCase().includes(searchTerm.toLowerCase())
+    item.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.description?.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   // Calculate stats
   const totalItems = items.length
-  const totalValue = items.reduce((sum, item) => sum + (item.price * (item.stockQuantity || 0)), 0)
+  const totalValue = items.reduce((sum, item) => sum + (item.salePrice * (item.stock || 0)), 0)
 
   if (isLoading) {
     return (
@@ -225,29 +250,33 @@ export function ItemsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Code</TableHead>
                   <TableHead>Name</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Unit</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Sale Price</TableHead>
+                  <TableHead>Purchase Price</TableHead>
                   <TableHead>Stock</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredItems.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground">
+                    <TableCell colSpan={8} className="text-center text-muted-foreground">
                       No items found
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredItems.map((item) => (
                     <TableRow key={item.id}>
-                      <TableCell className="font-mono text-sm">{item.code || 'N/A'}</TableCell>
                       <TableCell className="font-medium">{item.name}</TableCell>
-                      <TableCell className="text-primary font-semibold">${item.price.toFixed(2)}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{item.unit || 'N/A'}</TableCell>
-                      <TableCell>{item.stockQuantity || 0}</TableCell>
+                      <TableCell>{item.type}</TableCell>
+                      <TableCell>{item.category}</TableCell>
+                      <TableCell className="text-primary font-semibold">${item.salePrice.toFixed(2)}</TableCell>
+                      <TableCell className="text-muted-foreground">${item.purchasePrice.toFixed(2)}</TableCell>
+                      <TableCell>{item.stock || 0}</TableCell>
+                      <TableCell>{item.status}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button
@@ -291,34 +320,71 @@ export function ItemsPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="create-code">Code</Label>
-              <Input id="create-code" {...createForm.register('code')} />
+              <Label htmlFor="create-type">Type *</Label>
+              <select
+                id="create-type"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                {...createForm.register('type')}
+              >
+                <option value="PRODUCT">Product</option>
+                <option value="SERVICE">Service</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="create-category">Category *</Label>
+              <Input id="create-category" {...createForm.register('category')} />
+              {createForm.formState.errors.category && (
+                <p className="text-sm text-destructive">{createForm.formState.errors.category.message}</p>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="create-price">Price *</Label>
+                <Label htmlFor="create-salePrice">Sale Price *</Label>
                 <Input
-                  id="create-price"
+                  id="create-salePrice"
                   type="number"
                   step="0.01"
-                  {...createForm.register('price', { valueAsNumber: true })}
+                  {...createForm.register('salePrice', { valueAsNumber: true })}
                 />
-                {createForm.formState.errors.price && (
-                  <p className="text-sm text-destructive">{createForm.formState.errors.price.message}</p>
+                {createForm.formState.errors.salePrice && (
+                  <p className="text-sm text-destructive">{createForm.formState.errors.salePrice.message}</p>
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="create-unit">Unit</Label>
-                <Input id="create-unit" placeholder="pcs, kg, etc." {...createForm.register('unit')} />
+                <Label htmlFor="create-purchasePrice">Purchase Price *</Label>
+                <Input
+                  id="create-purchasePrice"
+                  type="number"
+                  step="0.01"
+                  {...createForm.register('purchasePrice', { valueAsNumber: true })}
+                />
+                {createForm.formState.errors.purchasePrice && (
+                  <p className="text-sm text-destructive">{createForm.formState.errors.purchasePrice.message}</p>
+                )}
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="create-stock">Stock Quantity</Label>
+              <Label htmlFor="create-stock">Stock</Label>
               <Input
                 id="create-stock"
                 type="number"
-                {...createForm.register('stockQuantity', { valueAsNumber: true })}
+                disabled={createForm.watch('type') === 'SERVICE'}
+                {...createForm.register('stock', { valueAsNumber: true })}
               />
+              {createForm.formState.errors.stock && (
+                <p className="text-sm text-destructive">{createForm.formState.errors.stock.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="create-status">Status *</Label>
+              <select
+                id="create-status"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                {...createForm.register('status')}
+              >
+                <option value="ACTIVE">Active</option>
+                <option value="PASSIVE">Passive</option>
+              </select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="create-description">Description</Label>
@@ -352,34 +418,71 @@ export function ItemsPage() {
               )}
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-code">Code</Label>
-              <Input id="edit-code" {...editForm.register('code')} />
+              <Label htmlFor="edit-type">Type *</Label>
+              <select
+                id="edit-type"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                {...editForm.register('type')}
+              >
+                <option value="PRODUCT">Product</option>
+                <option value="SERVICE">Service</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-category">Category *</Label>
+              <Input id="edit-category" {...editForm.register('category')} />
+              {editForm.formState.errors.category && (
+                <p className="text-sm text-destructive">{editForm.formState.errors.category.message}</p>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="edit-price">Price *</Label>
+                <Label htmlFor="edit-salePrice">Sale Price *</Label>
                 <Input
-                  id="edit-price"
+                  id="edit-salePrice"
                   type="number"
                   step="0.01"
-                  {...editForm.register('price', { valueAsNumber: true })}
+                  {...editForm.register('salePrice', { valueAsNumber: true })}
                 />
-                {editForm.formState.errors.price && (
-                  <p className="text-sm text-destructive">{editForm.formState.errors.price.message}</p>
+                {editForm.formState.errors.salePrice && (
+                  <p className="text-sm text-destructive">{editForm.formState.errors.salePrice.message}</p>
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-unit">Unit</Label>
-                <Input id="edit-unit" placeholder="pcs, kg, etc." {...editForm.register('unit')} />
+                <Label htmlFor="edit-purchasePrice">Purchase Price *</Label>
+                <Input
+                  id="edit-purchasePrice"
+                  type="number"
+                  step="0.01"
+                  {...editForm.register('purchasePrice', { valueAsNumber: true })}
+                />
+                {editForm.formState.errors.purchasePrice && (
+                  <p className="text-sm text-destructive">{editForm.formState.errors.purchasePrice.message}</p>
+                )}
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="edit-stock">Stock Quantity</Label>
+              <Label htmlFor="edit-stock">Stock</Label>
               <Input
                 id="edit-stock"
                 type="number"
-                {...editForm.register('stockQuantity', { valueAsNumber: true })}
+                disabled={editForm.watch('type') === 'SERVICE'}
+                {...editForm.register('stock', { valueAsNumber: true })}
               />
+              {editForm.formState.errors.stock && (
+                <p className="text-sm text-destructive">{editForm.formState.errors.stock.message}</p>
+              )}
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-status">Status *</Label>
+              <select
+                id="edit-status"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                {...editForm.register('status')}
+              >
+                <option value="ACTIVE">Active</option>
+                <option value="PASSIVE">Passive</option>
+              </select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="edit-description">Description</Label>

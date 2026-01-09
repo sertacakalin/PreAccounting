@@ -136,6 +136,7 @@ export function CustomersPage() {
         phone: data.phone === '' ? undefined : data.phone,
         taxNo: data.taxNo === '' ? undefined : data.taxNo,
         address: data.address === '' ? undefined : data.address,
+        active: editingCustomer.active ?? true,
       }
       updateMutation.mutate({ id: editingCustomer.id, data: cleanedData })
     }

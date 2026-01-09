@@ -12,7 +12,8 @@ export interface Customer {
   phone?: string
   taxNo?: string
   address?: string
-  companyId: number
+  active?: boolean
+  companyId?: number
   createdAt: string
   updatedAt: string
 }
@@ -33,4 +34,5 @@ export interface UpdateCustomerRequest {
   phone?: string
   taxNo?: string
   address?: string
+  active?: boolean
 }

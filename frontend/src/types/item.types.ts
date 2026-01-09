@@ -2,14 +2,19 @@
  * Item (Product/Service) TypeScript types
  */
 
+export type ItemType = 'PRODUCT' | 'SERVICE'
+export type ItemStatus = 'ACTIVE' | 'PASSIVE'
+
 export interface Item {
   id: number
   name: string
-  code?: string
   description?: string
-  price: number
-  unit?: string
-  stockQuantity?: number
+  type: ItemType
+  category: string
+  stock?: number
+  salePrice: number
+  purchasePrice: number
+  status: ItemStatus
   companyId: number
   createdAt: string
   updatedAt: string
@@ -17,18 +22,22 @@ export interface Item {
 
 export interface CreateItemRequest {
   name: string
-  code?: string
   description?: string
-  price: number
-  unit?: string
-  stockQuantity?: number
+  type: ItemType
+  category: string
+  stock?: number
+  salePrice: number
+  purchasePrice: number
+  status?: ItemStatus
 }
 
 export interface UpdateItemRequest {
   name: string
-  code?: string
   description?: string
-  price: number
-  unit?: string
-  stockQuantity?: number
+  type: ItemType
+  category: string
+  stock?: number
+  salePrice: number
+  purchasePrice: number
+  status: ItemStatus
 }

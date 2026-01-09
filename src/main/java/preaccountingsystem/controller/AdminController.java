@@ -63,9 +63,29 @@ public class AdminController {
         return ResponseEntity.ok(adminService.updateCompanyStatus(id, request));
     }
 
+    @PutMapping("/companies/{id}")
+    public ResponseEntity<CompanyDto> updateCompany(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateCompanyRequest request) {
+        return ResponseEntity.ok(adminService.updateCompany(id, request));
+    }
+
+    @DeleteMapping("/companies/{id}")
+    public ResponseEntity<Void> deleteCompany(@PathVariable Long id) {
+        adminService.deleteCompany(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/users")
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody CreateUserRequest request) {
         return new ResponseEntity<>(adminService.createUser(request), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/users/{id}")
+    public ResponseEntity<UserDto> updateUser(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateUserRequest request) {
+        return ResponseEntity.ok(adminService.updateUser(id, request));
     }
 
     @PatchMapping("/users/{id}/company")

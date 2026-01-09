@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import { AdminLayout } from '@/components/admin/AdminLayout'
+import { CustomerLayout } from '@/components/customer/CustomerLayout'
 import { LandingPage } from '@/pages/LandingPage'
 import { AdminDashboard } from '@/pages/AdminDashboard'
 import { UserManagement } from '@/pages/UserManagement'
@@ -59,53 +60,20 @@ function App() {
 
             {/* Customer Routes */}
             <Route
-              path={ROUTES.CUSTOMER_DASHBOARD}
+              path="/dashboard"
               element={
                 <ProtectedRoute requireCustomer>
-                  <CustomerDashboard />
+                  <CustomerLayout />
                 </ProtectedRoute>
               }
-            />
-            <Route
-              path={ROUTES.CUSTOMER_INCOME_EXPENSE}
-              element={
-                <ProtectedRoute requireCustomer>
-                  <IncomeExpensePage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path={ROUTES.CUSTOMER_ITEMS}
-              element={
-                <ProtectedRoute requireCustomer>
-                  <ItemsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path={ROUTES.CUSTOMER_CUSTOMERS}
-              element={
-                <ProtectedRoute requireCustomer>
-                  <CustomersPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path={ROUTES.CUSTOMER_INVOICES}
-              element={
-                <ProtectedRoute requireCustomer>
-                  <InvoicesPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path={ROUTES.CUSTOMER_PAYMENTS}
-              element={
-                <ProtectedRoute requireCustomer>
-                  <PaymentsPage />
-                </ProtectedRoute>
-              }
-            />
+            >
+              <Route index element={<CustomerDashboard />} />
+              <Route path="income-expense" element={<IncomeExpensePage />} />
+              <Route path="items" element={<ItemsPage />} />
+              <Route path="customers" element={<CustomersPage />} />
+              <Route path="invoices" element={<InvoicesPage />} />
+              <Route path="payments" element={<PaymentsPage />} />
+            </Route>
 
             {/* Catch all - redirect to home */}
             <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />

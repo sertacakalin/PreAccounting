@@ -144,7 +144,7 @@ export function AdminDashboard() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">{user?.firstName} {user?.lastName}</span>
+              <span className="text-sm text-muted-foreground">{user?.username}</span>
               <Button onClick={logout} variant="outline" size="sm">
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout

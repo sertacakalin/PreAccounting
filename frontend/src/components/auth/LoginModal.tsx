@@ -22,7 +22,7 @@ import { Loader2 } from 'lucide-react'
 
 // Validation schema
 const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
+  username: z.string().min(1, 'ID is required'),
   password: z.string().min(1, 'Password is required'),
 })
 
@@ -71,19 +71,19 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Email Field */}
+          {/* ID Field */}
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="username">ID</Label>
             <Input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              autoComplete="email"
+              id="username"
+              type="text"
+              placeholder="Enter your ID"
+              autoComplete="username"
               disabled={isLoading}
-              {...register('email')}
+              {...register('username')}
             />
-            {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
+            {errors.username && (
+              <p className="text-sm text-destructive">{errors.username.message}</p>
             )}
           </div>
 
@@ -105,9 +105,9 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
           {/* Demo Credentials Info */}
           <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
-            <p className="font-semibold mb-1">Demo Credentials:</p>
+            <p className="font-semibold mb-1">Demo ID:</p>
             <p>Admin: <code className="bg-muted px-1 py-0.5 rounded">admin</code> / <code className="bg-muted px-1 py-0.5 rounded">admin123</code></p>
-            <p>Customer: <code className="bg-muted px-1 py-0.5 rounded">testcustomer</code> / <code className="bg-muted px-1 py-0.5 rounded">password123</code></p>
+            <p>User: <code className="bg-muted px-1 py-0.5 rounded">user</code> / <code className="bg-muted px-1 py-0.5 rounded">user123</code></p>
           </div>
 
           {/* Submit Button */}

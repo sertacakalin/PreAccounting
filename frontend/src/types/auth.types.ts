@@ -1,16 +1,12 @@
 export interface User {
   id: number
-  email: string
-  firstName: string
-  lastName: string
+  username: string
   role: 'ADMIN' | 'USER'
-  companyId?: number
-  createdAt: string
-  updatedAt: string
+  customerId?: number
 }
 
 export interface LoginCredentials {
-  email: string
+  username: string
   password: string
 }
 
@@ -24,5 +20,8 @@ export interface RegisterData {
 
 export interface AuthResponse {
   token: string
-  user: User
+  userId: number
+  username: string
+  role: 'ADMIN' | 'USER'
+  customerId?: number
 }

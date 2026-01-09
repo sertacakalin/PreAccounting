@@ -128,6 +128,41 @@ public class AdminService {
         return convertToCompanyDto(updatedCompany);
     }
 
+    public CompanyDto updateCompany(Long companyId, UpdateCompanyRequest request) {
+        Customer company = customerRepository.findById(companyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + companyId));
+
+        // Check if email is being changed and already exists
+        if (request.getEmail() != null && !request.getEmail().equals(company.getEmail())) {
+            if (customerRepository.findByEmail(request.getEmail()).isPresent()) {
+                throw new BusinessException("Company with email " + request.getEmail() + " already exists");
+            }
+        }
+
+        company.setName(request.getName());
+        company.setEmail(request.getEmail());
+        company.setPhone(request.getPhone());
+        company.setTaxNo(request.getTaxNo());
+        company.setAddress(request.getAddress());
+        company.setStatus(request.getStatus());
+
+        Customer updatedCompany = customerRepository.save(company);
+
+        return convertToCompanyDto(updatedCompany);
+    }
+
+    public void deleteCompany(Long companyId) {
+        Customer company = customerRepository.findById(companyId)
+                .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + companyId));
+
+        // Check if company has an associated user
+        if (company.getUser() != null) {
+            throw new BusinessException("Cannot delete company with an associated user. Please delete or reassign the user first.");
+        }
+
+        customerRepository.delete(company);
+    }
+
     private CompanyDto convertToCompanyDto(Customer customer) {
         return CompanyDto.builder()
                 .id(customer.getId())
@@ -255,6 +290,76 @@ public class AdminService {
         }
 
         userRepository.delete(user);
+    }
+
+    public UserDto updateUser(Long userId, UpdateUserRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        // Check if username is being changed and already exists
+        if (!request.getUsername().equals(user.getUsername())) {
+            if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+                throw new BusinessException("Username " + request.getUsername() + " already exists");
+            }
+        }
+
+        // Validate role and company combination
+        if (request.getRole() == Role.CUSTOMER && request.getCompanyId() == null) {
+            throw new BusinessException("CUSTOMER users must be linked to a company");
+        }
+
+        if (request.getRole() == Role.ADMIN && request.getCompanyId() != null) {
+            throw new BusinessException("ADMIN users cannot be linked to a company");
+        }
+
+        // Update username
+        user.setUsername(request.getUsername());
+
+        // Update password only if provided
+        if (request.getPassword() != null && !request.getPassword().trim().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        // Handle role change
+        if (user.getRole() != request.getRole()) {
+            // If changing from CUSTOMER to ADMIN, remove company association
+            if (user.getRole() == Role.CUSTOMER && request.getRole() == Role.ADMIN) {
+                if (user.getCustomer() != null) {
+                    Customer company = user.getCustomer();
+                    company.setUser(null);
+                    user.setCustomer(null);
+                    customerRepository.save(company);
+                }
+            }
+            user.setRole(request.getRole());
+        }
+
+        // Handle company association for CUSTOMER role
+        if (request.getRole() == Role.CUSTOMER) {
+            // Remove old company association if exists
+            if (user.getCustomer() != null && !user.getCustomer().getId().equals(request.getCompanyId())) {
+                Customer oldCompany = user.getCustomer();
+                oldCompany.setUser(null);
+                user.setCustomer(null);
+                customerRepository.save(oldCompany);
+            }
+
+            // Add new company association
+            if (request.getCompanyId() != null) {
+                Customer newCompany = customerRepository.findById(request.getCompanyId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + request.getCompanyId()));
+
+                if (newCompany.getUser() != null && !newCompany.getUser().getId().equals(userId)) {
+                    throw new BusinessException("Company already has an associated user");
+                }
+
+                user.setCustomer(newCompany);
+                newCompany.setUser(user);
+            }
+        }
+
+        User updatedUser = userRepository.save(user);
+        return convertToUserDto(updatedUser);
     }
 
     public UserDto updateUserRole(Long userId, UpdateUserRoleRequest request, Long currentAdminId) {

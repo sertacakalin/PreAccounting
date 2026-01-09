@@ -238,7 +238,7 @@ export function IncomeExpensePage() {
             </div>
             <div>
               <h1 className="text-lg font-bold">Income & Expense</h1>
-              <p className="text-xs text-muted-foreground">Welcome, {user?.firstName} {user?.lastName}</p>
+              <p className="text-xs text-muted-foreground">Welcome, {user?.username}</p>
             </div>
           </div>
           <Button onClick={logout} variant="outline" size="sm">

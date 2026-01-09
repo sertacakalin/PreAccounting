@@ -46,21 +46,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // Store token and user data
       setToken(response.token)
-      storeUser(response.user)
-      setUserState(response.user)
+      const userData: User = {
+        id: response.userId,
+        username: response.username,
+        role: response.role,
+        customerId: response.customerId,
+      }
+      storeUser(userData)
+      setUserState(userData)
 
       // Show success message
-      toast.success(`Welcome back, ${response.user.firstName}!`)
+      toast.success(`Welcome back, ${response.username}!`)
 
       // Redirect based on role
-      if (response.user.role === 'ADMIN') {
+      if (response.role === 'ADMIN') {
         navigate(ROUTES.ADMIN_DASHBOARD)
-      } else if (response.user.role === 'USER') {
+      } else if (response.role === 'USER') {
         navigate(ROUTES.CUSTOMER_DASHBOARD)
       }
     } catch (error: any) {
       console.error('Login failed:', error)
-      const errorMessage = error.response?.data?.message || 'Invalid email or password'
+      const errorMessage = error.response?.data?.message || 'Invalid ID or password'
       toast.error(errorMessage)
       throw error // Re-throw for component to handle
     }

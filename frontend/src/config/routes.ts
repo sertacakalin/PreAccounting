@@ -14,11 +14,11 @@ export const ROUTES = {
 
   // Customer routes
   CUSTOMER_DASHBOARD: '/dashboard',
-  CUSTOMER_CUSTOMERS: '/customers',
-  CUSTOMER_INVOICES: '/invoices',
-  CUSTOMER_PAYMENTS: '/payments',
-  CUSTOMER_INCOME_EXPENSE: '/income-expense',
-  CUSTOMER_ITEMS: '/items',
+  CUSTOMER_INCOME_EXPENSE: '/dashboard/income-expense',
+  CUSTOMER_ITEMS: '/dashboard/items',
+  CUSTOMER_CUSTOMERS: '/dashboard/customers',
+  CUSTOMER_INVOICES: '/dashboard/invoices',
+  CUSTOMER_PAYMENTS: '/dashboard/payments',
   CUSTOMERS: '/customers',
   INVOICES: '/invoices',
   PAYMENTS: '/payments',

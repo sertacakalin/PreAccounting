@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import preaccountingsystem.entity.CompanyStatus;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -18,4 +20,6 @@ public class CompanyDto {
     private String taxNo;
     private String address;
     private CompanyStatus status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

@@ -103,6 +103,21 @@ public class AdminService {
                 .collect(Collectors.toList());
     }
 
+    public List<CompanyDto> searchCompanies(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return listCompanies();
+        }
+
+        String searchQuery = query.toLowerCase().trim();
+        return customerRepository.findAll().stream()
+                .filter(company ->
+                    company.getName().toLowerCase().contains(searchQuery) ||
+                    (company.getEmail() != null && company.getEmail().toLowerCase().contains(searchQuery)) ||
+                    (company.getTaxNo() != null && company.getTaxNo().toLowerCase().contains(searchQuery)))
+                .map(this::convertToCompanyDto)
+                .collect(Collectors.toList());
+    }
+
     public CompanyDto updateCompanyStatus(Long companyId, UpdateCompanyStatusRequest request) {
         Customer company = customerRepository.findById(companyId)
                 .orElseThrow(() -> new ResourceNotFoundException("Company not found with id: " + companyId));
@@ -122,6 +137,8 @@ public class AdminService {
                 .taxNo(customer.getTaxNo())
                 .address(customer.getAddress())
                 .status(customer.getStatus())
+                .createdAt(customer.getCreatedAt())
+                .updatedAt(customer.getUpdatedAt())
                 .build();
     }
 
@@ -139,6 +156,20 @@ public class AdminService {
 
     public List<UserDto> listAllUsers() {
         return userRepository.findAll().stream()
+                .map(this::convertToUserDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserDto> searchUsers(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return listAllUsers();
+        }
+
+        String searchQuery = query.toLowerCase().trim();
+        return userRepository.findAll().stream()
+                .filter(user ->
+                    user.getUsername().toLowerCase().contains(searchQuery) ||
+                    (user.getCustomer() != null && user.getCustomer().getName().toLowerCase().contains(searchQuery)))
                 .map(this::convertToUserDto)
                 .collect(Collectors.toList());
     }
@@ -248,6 +279,11 @@ public class AdminService {
         }
 
         if (user.getRole() == Role.ADMIN && request.getRole() == Role.CUSTOMER) {
+            // When demoting ADMIN to CUSTOMER, they must be assigned to a company
+            // This should be done via updateUserCompany endpoint after role change
+            // or reject the operation if no company is specified
+            throw new BusinessException("ADMIN users cannot be directly demoted to CUSTOMER without company assignment. " +
+                    "Please create a new CUSTOMER user with company assignment instead.");
         }
 
         user.setRole(request.getRole());
@@ -263,6 +299,8 @@ public class AdminService {
                 .role(user.getRole())
                 .customerId(user.getCustomer() != null ? user.getCustomer().getId() : null)
                 .customerName(user.getCustomer() != null ? user.getCustomer().getName() : null)
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 

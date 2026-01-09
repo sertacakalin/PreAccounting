@@ -68,7 +68,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 if (userDetails instanceof preaccountingsystem.entity.User) {
                     preaccountingsystem.entity.User user = (preaccountingsystem.entity.User) userDetails;
                     if (user.getCustomer() != null &&
-                            user.getCustomer().getStatus() == preaccountingsystem.entity.CompanyStatus.PASSIVE) {
+                            user.getCustomer().getStatus() != preaccountingsystem.entity.CompanyStatus.ACTIVE) {
                         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                         response.setContentType("application/json");
                         response.getWriter().write("{\"error\":\"Company account is deactivated\"}");

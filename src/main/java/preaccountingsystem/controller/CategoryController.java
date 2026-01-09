@@ -54,6 +54,8 @@ public class CategoryController {
     }
 
     private Long getCompanyIdFromUser(User user) {
+        // Only CUSTOMER role users can manage categories
+        // Admin users don't have company context
         if (user.getRole() == Role.ADMIN) {
             throw new BusinessException("Admin users cannot manage categories. Categories are company-specific.");
         }

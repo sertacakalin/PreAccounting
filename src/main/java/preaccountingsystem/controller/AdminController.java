@@ -36,7 +36,10 @@ public class AdminController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<UserDto>> listAllUsers() {
+    public ResponseEntity<List<UserDto>> listAllUsers(@RequestParam(required = false) String search) {
+        if (search != null && !search.trim().isEmpty()) {
+            return ResponseEntity.ok(adminService.searchUsers(search));
+        }
         return ResponseEntity.ok(adminService.listAllUsers());
     }
 
@@ -46,7 +49,10 @@ public class AdminController {
     }
 
     @GetMapping("/companies")
-    public ResponseEntity<List<CompanyDto>> listCompanies() {
+    public ResponseEntity<List<CompanyDto>> listCompanies(@RequestParam(required = false) String search) {
+        if (search != null && !search.trim().isEmpty()) {
+            return ResponseEntity.ok(adminService.searchCompanies(search));
+        }
         return ResponseEntity.ok(adminService.listCompanies());
     }
 

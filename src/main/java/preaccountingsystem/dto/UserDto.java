@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import preaccountingsystem.entity.Role;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -16,4 +18,6 @@ public class UserDto {
     private Role role;
     private Long customerId;
     private String customerName;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

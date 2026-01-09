@@ -35,8 +35,8 @@ public class AuthService {
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UnauthorizedException("User not found"));
 
-        // Check if user has a customer/company and if it's PASSIVE
-        if (user.getCustomer() != null && user.getCustomer().getStatus() == preaccountingsystem.entity.CompanyStatus.PASSIVE) {
+        // Check if user has a customer/company and if it's INACTIVE or SUSPENDED
+        if (user.getCustomer() != null && user.getCustomer().getStatus() != preaccountingsystem.entity.CompanyStatus.ACTIVE) {
             throw new UnauthorizedException("Your company account has been deactivated. Please contact the administrator.");
         }
 

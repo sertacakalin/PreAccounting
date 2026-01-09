@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button'
-import { ArrowRight } from 'lucide-react'
 
 interface HeroProps {
   onGetStarted?: () => void
@@ -23,27 +22,9 @@ export function Hero({ onGetStarted }: HeroProps) {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" className="text-base" onClick={onGetStarted}>
-              Get Started
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
             <Button size="lg" variant="outline" className="text-base" onClick={onGetStarted}>
               Sign In
             </Button>
-          </div>
-        </div>
-
-        {/* Hero Image/Mockup Placeholder */}
-        <div className="mt-16 mx-auto max-w-5xl">
-          <div className="relative rounded-xl border bg-background shadow-2xl">
-            <div className="aspect-video rounded-lg bg-gradient-to-br from-primary/10 via-background to-secondary/10 p-4">
-              <div className="h-full w-full rounded-lg border-2 border-dashed border-muted-foreground/20 flex items-center justify-center">
-                <div className="text-center">
-                  <DollarSign className="h-16 w-16 mx-auto mb-4 text-muted-foreground/40" />
-                  <p className="text-muted-foreground">Dashboard Preview</p>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -55,23 +36,5 @@ export function Hero({ onGetStarted }: HeroProps) {
         </div>
       </div>
     </section>
-  )
-}
-
-function DollarSign({ className }: { className?: string }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      <line x1="12" y1="1" x2="12" y2="23" />
-      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-    </svg>
   )
 }

@@ -28,7 +28,7 @@ interface LoginFormProps {
   showDemo?: boolean
 }
 
-export function LoginForm({ onSuccess, className, showDemo = true }: LoginFormProps) {
+export function LoginForm({ onSuccess, className, showDemo = false }: LoginFormProps) {
   const { login } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -57,13 +57,13 @@ export function LoginForm({ onSuccess, className, showDemo = true }: LoginFormPr
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={cn('space-y-4', className)}>
-      {/* ID Field */}
+      {/* Username Field */}
       <div className="space-y-2">
-        <Label htmlFor="username">ID</Label>
+        <Label htmlFor="username">Username</Label>
         <Input
           id="username"
           type="text"
-          placeholder="Enter your ID"
+          placeholder="Enter your username"
           autoComplete="username"
           disabled={isLoading}
           {...register('username')}
@@ -89,20 +89,6 @@ export function LoginForm({ onSuccess, className, showDemo = true }: LoginFormPr
         )}
       </div>
 
-      {/* Demo Credentials Info */}
-      {showDemo && (
-        <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
-          <p className="font-semibold mb-1">Demo ID:</p>
-          <p>
-            Admin: <code className="bg-muted px-1 py-0.5 rounded">admin</code> /{' '}
-            <code className="bg-muted px-1 py-0.5 rounded">admin123</code>
-          </p>
-          <p>
-            User: <code className="bg-muted px-1 py-0.5 rounded">user</code> /{' '}
-            <code className="bg-muted px-1 py-0.5 rounded">user123</code>
-          </p>
-        </div>
-      )}
 
       {/* Submit Button */}
       <Button type="submit" className="w-full" disabled={isLoading}>

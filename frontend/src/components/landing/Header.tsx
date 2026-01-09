@@ -32,9 +32,6 @@ export function Header({ onLoginClick }: HeaderProps) {
           <Button variant="ghost" onClick={onLoginClick}>
             Login
           </Button>
-          <Button onClick={onLoginClick}>
-            Get Started
-          </Button>
         </div>
       </div>
     </header>

@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearAuth()
     setUserState(null)
     toast.info('You have been logged out')
-    navigate(ROUTES.HOME)
+    window.location.href = ROUTES.HOME
   }
 
   const value: AuthContextValue = {

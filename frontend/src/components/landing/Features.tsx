@@ -5,9 +5,6 @@ import {
   Users,
   CreditCard,
   BarChart3,
-  Shield,
-  Zap,
-  Globe
 } from 'lucide-react'
 
 export function Features() {
@@ -36,21 +33,6 @@ export function Features() {
       icon: BarChart3,
       title: 'Financial Reports',
       description: 'Generate detailed financial reports and insights to drive business decisions.',
-    },
-    {
-      icon: Shield,
-      title: 'Secure & Compliant',
-      description: 'Bank-level security with encrypted data storage and compliance standards.',
-    },
-    {
-      icon: Zap,
-      title: 'Fast & Efficient',
-      description: 'Lightning-fast performance with intuitive workflows to save you time.',
-    },
-    {
-      icon: Globe,
-      title: 'Multi-Company Support',
-      description: 'Manage multiple businesses from a single dashboard with ease.',
     },
   ]
 

@@ -49,24 +49,24 @@ export const paymentService = {
     startDate?: string
     endDate?: string
   }): Promise<Payment[]> => {
-    const response = await api.get<ApiPayment[]>('/api/payments', {
+    const response = await api.get<ApiPayment[]>('/payments', {
       params,
     })
     return response.data.map(mapApiPayment)
   },
 
   getById: async (id: number): Promise<Payment> => {
-    const response = await api.get<ApiPayment>(`/api/payments/${id}`)
+    const response = await api.get<ApiPayment>(`/payments/${id}`)
     return mapApiPayment(response.data)
   },
 
   getByInvoice: async (invoiceId: number): Promise<Payment[]> => {
-    const response = await api.get<ApiPayment[]>(`/api/payments/invoice/${invoiceId}`)
+    const response = await api.get<ApiPayment[]>(`/payments/invoice/${invoiceId}`)
     return response.data.map(mapApiPayment)
   },
 
   create: async (data: CreatePaymentRequest): Promise<Payment> => {
-    const response = await api.post<ApiPayment>('/api/payments', data)
+    const response = await api.post<ApiPayment>('/payments', data)
     return mapApiPayment(response.data)
   },
 }

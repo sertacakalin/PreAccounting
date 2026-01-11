@@ -33,12 +33,12 @@ const mapApiCustomer = (data: ApiCustomer): Customer => ({
 
 export const customerService = {
   getAll: async (): Promise<Customer[]> => {
-    const response = await api.get<ApiCustomer[]>('/api/customers')
+    const response = await api.get<ApiCustomer[]>('/customers')
     return response.data.map(mapApiCustomer)
   },
 
   getById: async (id: number): Promise<Customer> => {
-    const response = await api.get<ApiCustomer>(`/api/customers/${id}`)
+    const response = await api.get<ApiCustomer>(`/customers/${id}`)
     return mapApiCustomer(response.data)
   },
 
@@ -51,7 +51,7 @@ export const customerService = {
       address: data.address,
       isCustomer: data.type === 'CUSTOMER',
     }
-    const response = await api.post<ApiCustomer>('/api/customers', payload)
+    const response = await api.post<ApiCustomer>('/customers', payload)
     return mapApiCustomer(response.data)
   },
 
@@ -65,7 +65,7 @@ export const customerService = {
       isCustomer: data.type === 'CUSTOMER',
       active: data.active ?? true,
     }
-    const response = await api.put<ApiCustomer>(`/api/customers/${id}`, payload)
+    const response = await api.put<ApiCustomer>(`/customers/${id}`, payload)
     return mapApiCustomer(response.data)
   },
 

@@ -67,7 +67,7 @@ export function ItemsPage() {
   // Fetch items
   const { data: items = [], isLoading } = useQuery({
     queryKey: ['items'],
-    queryFn: itemService.getAll,
+    queryFn: () => itemService.getAll(),
   })
 
   // Forms

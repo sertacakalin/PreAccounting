@@ -49,11 +49,7 @@ const paymentSchema = z.object({
   ]),
   currency: z.string().length(3, 'Currency must be a 3-letter ISO code').optional(),
   customerSupplierId: z.number().min(1, 'Customer/Supplier is required'),
-  invoiceId: z
-    .number()
-    .optional()
-    .or(z.nan())
-    .transform((value) => (Number.isNaN(value) ? undefined : value)),
+  invoiceId: z.number().optional(),
   notes: z.string().max(1000).optional().or(z.literal('')),
 })
 

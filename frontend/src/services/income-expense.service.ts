@@ -15,22 +15,22 @@ import type {
 export const incomeExpenseService = {
   // Income/Expense CRUD
   getAll: async (): Promise<IncomeExpense[]> => {
-    const response = await api.get<IncomeExpense[]>('/api/income-expenses')
+    const response = await api.get<IncomeExpense[]>('/income-expenses')
     return response.data
   },
 
   getById: async (id: number): Promise<IncomeExpense> => {
-    const response = await api.get<IncomeExpense>(`/api/income-expenses/${id}`)
+    const response = await api.get<IncomeExpense>(`/income-expenses/${id}`)
     return response.data
   },
 
   create: async (data: CreateIncomeExpenseRequest): Promise<IncomeExpense> => {
-    const response = await api.post<IncomeExpense>('/api/income-expenses', data)
+    const response = await api.post<IncomeExpense>('/income-expenses', data)
     return response.data
   },
 
   update: async (id: number, data: UpdateIncomeExpenseRequest): Promise<IncomeExpense> => {
-    const response = await api.put<IncomeExpense>(`/api/income-expenses/${id}`, data)
+    const response = await api.put<IncomeExpense>(`/income-expenses/${id}`, data)
     return response.data
   },
 

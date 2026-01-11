@@ -309,7 +309,7 @@ export function AdminDashboard() {
                       <TableBody>
                         {recentUsers.map((user) => (
                             <TableRow key={user.id}>
-                              <TableCell className="font-medium">{user.email}</TableCell>
+                              <TableCell className="font-medium">{user.username}</TableCell>
                               <TableCell>
                                 <Badge variant={user.role === 'ADMIN' ? 'default' : 'secondary'}>
                                   {user.role}

@@ -1,11 +1,7 @@
 import axios from 'axios'
 import { getToken } from '@/lib/storage'
 
-const rawBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8081'
-const normalizedBaseUrl = rawBaseUrl.replace(/\/+$/, '')
-const baseUrl = normalizedBaseUrl.endsWith('/api')
-  ? normalizedBaseUrl.slice(0, -4)
-  : normalizedBaseUrl
+const baseUrl = import.meta.env.VITE_API_URL || ''
 
 const api = axios.create({
   baseURL: baseUrl,

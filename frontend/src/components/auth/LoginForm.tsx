@@ -28,7 +28,7 @@ interface LoginFormProps {
   showDemo?: boolean
 }
 
-export function LoginForm({ onSuccess, className, showDemo = false }: LoginFormProps) {
+export function LoginForm({ onSuccess, className }: LoginFormProps) {
   const { login } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
 

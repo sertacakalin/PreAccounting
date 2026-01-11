@@ -3,26 +3,26 @@ import type { User, CreateUserRequest, UpdateUserRequest } from '@/types/user.ty
 
 export const userService = {
   getAll: async (): Promise<User[]> => {
-    const response = await api.get<User[]>('/api/admin/users')
+    const response = await api.get<User[]>('/admin/users')
     return response.data
   },
 
   getById: async (id: number): Promise<User> => {
-    const response = await api.get<User>(`/api/admin/users/${id}`)
+    const response = await api.get<User>(`/admin/users/${id}`)
     return response.data
   },
 
   create: async (data: CreateUserRequest): Promise<User> => {
-    const response = await api.post<User>('/api/admin/users', data)
+    const response = await api.post<User>('/admin/users', data)
     return response.data
   },
 
   update: async (id: number, data: UpdateUserRequest): Promise<User> => {
-    const response = await api.put<User>(`/api/admin/users/${id}`, data)
+    const response = await api.put<User>(`/admin/users/${id}`, data)
     return response.data
   },
 
   delete: async (id: number): Promise<void> => {
-    await api.delete(`/api/admin/users/${id}`)
+    await api.delete(`/admin/users/${id}`)
   },
 }

@@ -49,28 +49,28 @@ const mapApiItem = (data: ApiItem): Item => ({
 
 export const itemService = {
   getAll: async (params?: { search?: string }): Promise<Item[]> => {
-    const response = await api.get<ApiPage<ApiItem>>('/api/items', {
+    const response = await api.get<ApiPage<ApiItem>>('/items', {
       params: params?.search ? { search: params.search } : undefined,
     })
     return response.data.content.map(mapApiItem)
   },
 
   getById: async (id: number): Promise<Item> => {
-    const response = await api.get<ApiItem>(`/api/items/${id}`)
+    const response = await api.get<ApiItem>(`/items/${id}`)
     return mapApiItem(response.data)
   },
 
   create: async (data: CreateItemRequest): Promise<Item> => {
-    const response = await api.post<ApiItem>('/api/items', data)
+    const response = await api.post<ApiItem>('/items', data)
     return mapApiItem(response.data)
   },
 
   update: async (id: number, data: UpdateItemRequest): Promise<Item> => {
-    const response = await api.put<ApiItem>(`/api/items/${id}`, data)
+    const response = await api.put<ApiItem>(`/items/${id}`, data)
     return mapApiItem(response.data)
   },
 
   delete: async (id: number): Promise<void> => {
-    await api.delete(`/api/items/${id}`)
+    await api.delete(`/items/${id}`)
   },
 }

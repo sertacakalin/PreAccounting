@@ -3,22 +3,22 @@ import type { Company, CreateCompanyRequest, UpdateCompanyRequest } from '@/type
 
 export const companyService = {
   getAll: async (): Promise<Company[]> => {
-    const response = await api.get<Company[]>('/api/admin/companies')
+    const response = await api.get<Company[]>('/admin/companies')
     return response.data
   },
 
   getById: async (id: number): Promise<Company> => {
-    const response = await api.get<Company>(`/api/admin/companies/${id}`)
+    const response = await api.get<Company>(`/admin/companies/${id}`)
     return response.data
   },
 
   create: async (data: CreateCompanyRequest): Promise<Company> => {
-    const response = await api.post<Company>('/api/admin/companies', data)
+    const response = await api.post<Company>('/admin/companies', data)
     return response.data
   },
 
   update: async (id: number, data: UpdateCompanyRequest): Promise<Company> => {
-    const response = await api.put<Company>(`/api/admin/companies/${id}`, data)
+    const response = await api.put<Company>(`/admin/companies/${id}`, data)
     return response.data
   },
 

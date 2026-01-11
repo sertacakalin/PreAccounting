@@ -69,9 +69,9 @@ export function IncomeExpensePage() {
   const queryClient = useQueryClient()
 
   // Fetch income/expenses
-  const { data: items = [], isLoading, error } = useQuery({
+  const { data: items = [], isLoading, error } = useQuery<IncomeExpense[]>({
     queryKey: ['income-expenses'],
-    queryFn: incomeExpenseService.getAll,
+    queryFn: () => incomeExpenseService.getAll(),
   })
 
   // Fetch categories
@@ -196,12 +196,18 @@ export function IncomeExpensePage() {
 
   const categoryById = useMemo(() => {
     const map = new Map<number, (typeof incomeCategories)[number] | (typeof expenseCategories)[number]>()
-    incomeCategories.forEach((cat) => map.set(cat.id, cat))
-    expenseCategories.forEach((cat) => map.set(cat.id, cat))
+    // Ensure we have arrays before calling forEach
+    if (Array.isArray(incomeCategories)) {
+      incomeCategories.forEach((cat) => map.set(cat.id, cat))
+    }
+    if (Array.isArray(expenseCategories)) {
+      expenseCategories.forEach((cat) => map.set(cat.id, cat))
+    }
     return map
   }, [incomeCategories, expenseCategories])
 
   const enrichedItems = useMemo(() => {
+    if (!Array.isArray(items)) return []
     return items.map((item) => ({
       ...item,
       category: item.category ?? categoryById.get(item.categoryId),

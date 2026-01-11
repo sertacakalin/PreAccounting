@@ -2,7 +2,9 @@ package preaccountingsystem.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +14,7 @@ import preaccountingsystem.dto.InvoiceDto;
 import preaccountingsystem.entity.User;
 import preaccountingsystem.exception.BusinessException;
 import preaccountingsystem.service.InvoiceService;
+import preaccountingsystem.service.InvoicePdfService;
 
 import java.util.List;
 
@@ -22,6 +25,7 @@ import java.util.List;
 public class InvoiceController {
 
     private final InvoiceService invoiceService;
+    private final InvoicePdfService invoicePdfService;
 
     @PostMapping
     public ResponseEntity<InvoiceDto> create(
@@ -104,5 +108,32 @@ public class InvoiceController {
                 currentUser.getCustomer().getId()
         );
         return ResponseEntity.ok(updated);
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> downloadPdf(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser) {
+
+        if (currentUser.getCustomer() == null) {
+            throw new BusinessException("User is not associated with any company");
+        }
+
+        // Get invoice
+        InvoiceDto invoice = invoiceService.getById(
+                id,
+                currentUser.getCustomer().getId()
+        );
+
+        // Generate PDF
+        byte[] pdfBytes = invoicePdfService.generateInvoicePdf(invoice);
+
+        // Set headers for PDF download
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "invoice-" + invoice.getInvoiceNumber() + ".pdf");
+        headers.setContentLength(pdfBytes.length);
+
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 }

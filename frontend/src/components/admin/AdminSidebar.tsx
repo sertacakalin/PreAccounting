@@ -8,6 +8,8 @@ import {
   Settings,
   LogOut,
   DollarSign,
+  Coins,
+  Sparkles,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -29,6 +31,16 @@ export function AdminSidebar() {
       label: 'Companies',
       icon: Building2,
       path: ROUTES.ADMIN_COMPANIES,
+    },
+    {
+      label: 'Currencies',
+      icon: Coins,
+      path: ROUTES.ADMIN_CURRENCIES,
+    },
+    {
+      label: 'AI Templates',
+      icon: Sparkles,
+      path: ROUTES.ADMIN_AI_TEMPLATES,
     },
     {
       label: 'Settings',

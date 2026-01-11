@@ -14,6 +14,8 @@ import { LoginPage } from '@/pages/LoginPage'
 import { AdminDashboard } from '@/pages/AdminDashboard'
 import { UserManagement } from '@/pages/UserManagement'
 import { CompanyManagement } from '@/pages/CompanyManagement'
+import { CurrencyManagement } from '@/pages/CurrencyManagement'
+import { AITemplateManagement } from '@/pages/AITemplateManagement'
 import { AdminSettings } from '@/pages/AdminSettings'
 import { CustomerDashboard } from '@/pages/CustomerDashboard'
 import { IncomeExpensePage } from '@/pages/IncomeExpensePage'
@@ -57,6 +59,8 @@ function App() {
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="users" element={<UserManagement />} />
               <Route path="companies" element={<CompanyManagement />} />
+              <Route path="currencies" element={<CurrencyManagement />} />
+              <Route path="ai-templates" element={<AITemplateManagement />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
 

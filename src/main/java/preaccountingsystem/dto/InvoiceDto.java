@@ -22,6 +22,7 @@ public class InvoiceDto {
     private BigDecimal totalAmount;
     private String currency;
     private String status;
+    private String type;
     private String notes;
     private Long customerSupplierId;
     private String customerSupplierName;

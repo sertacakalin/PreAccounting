@@ -202,6 +202,7 @@ public class InvoiceService {
                 .totalAmount(entity.getTotalAmount())
                 .currency(entity.getCurrency())
                 .status(entity.getStatus().name())
+                .type(entity.getCustomerSupplier().getIsCustomer() ? "INCOME" : "EXPENSE")
                 .notes(entity.getNotes())
                 .customerSupplierId(entity.getCustomerSupplier().getId())
                 .customerSupplierName(entity.getCustomerSupplier().getName())

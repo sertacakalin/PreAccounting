@@ -1,10 +1,11 @@
 import api from './api'
+import { coerceArray } from './response'
 import type { User, CreateUserRequest, UpdateUserRequest } from '@/types/user.types'
 
 export const userService = {
   getAll: async (): Promise<User[]> => {
     const response = await api.get<User[]>('/admin/users')
-    return response.data
+    return coerceArray<User>(response.data)
   },
 
   getById: async (id: number): Promise<User> => {

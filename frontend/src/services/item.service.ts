@@ -3,6 +3,7 @@
  */
 
 import api from './api'
+import { coerceArray } from './response'
 import type { Item, CreateItemRequest, UpdateItemRequest, ItemStatus, ItemType } from '@/types/item.types'
 
 type ApiItem = {
@@ -18,10 +19,6 @@ type ApiItem = {
   companyId: number
   createdAt: string
   updatedAt: string
-}
-
-type ApiPage<T> = {
-  content: T[]
 }
 
 const toNumber = (value: number | string | null | undefined): number | undefined => {
@@ -48,11 +45,16 @@ const mapApiItem = (data: ApiItem): Item => ({
 })
 
 export const itemService = {
-  getAll: async (params?: { search?: string }): Promise<Item[]> => {
-    const response = await api.get<ApiPage<ApiItem>>('/items', {
-      params: params?.search ? { search: params.search } : undefined,
-    })
-    return response.data.content.map(mapApiItem)
+  getAll: async (params?: {
+    search?: string
+    page?: number
+    size?: number
+    status?: ItemStatus
+    type?: ItemType
+    category?: string
+  }): Promise<Item[]> => {
+    const response = await api.get<ApiItem[] | { content: ApiItem[] }>('/items', { params })
+    return coerceArray<ApiItem>(response.data).map(mapApiItem)
   },
 
   getById: async (id: number): Promise<Item> => {
@@ -72,5 +74,37 @@ export const itemService = {
 
   delete: async (id: number): Promise<void> => {
     await api.delete(`/items/${id}`)
+  },
+
+  /**
+   * Get only active items (for dropdowns)
+   */
+  getActive: async (): Promise<Item[]> => {
+    const response = await api.get<ApiItem[]>('/items/active')
+    return coerceArray<ApiItem>(response.data).map(mapApiItem)
+  },
+
+  /**
+   * Get unique item categories
+   */
+  getCategories: async (): Promise<string[]> => {
+    const response = await api.get<string[]>('/items/categories')
+    return coerceArray<string>(response.data)
+  },
+
+  /**
+   * Activate item (set status to ACTIVE)
+   */
+  activate: async (id: number): Promise<Item> => {
+    const response = await api.patch<ApiItem>(`/items/${id}/activate`)
+    return mapApiItem(response.data)
+  },
+
+  /**
+   * Deactivate item (set status to PASSIVE)
+   */
+  deactivate: async (id: number): Promise<Item> => {
+    const response = await api.patch<ApiItem>(`/items/${id}/deactivate`)
+    return mapApiItem(response.data)
   },
 }

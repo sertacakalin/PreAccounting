@@ -3,6 +3,7 @@
  */
 
 import api from './api'
+import { coerceArray } from './response'
 import type { Customer, CreateCustomerRequest, UpdateCustomerRequest } from '@/types/customer.types'
 
 type ApiCustomer = {
@@ -34,7 +35,7 @@ const mapApiCustomer = (data: ApiCustomer): Customer => ({
 export const customerService = {
   getAll: async (): Promise<Customer[]> => {
     const response = await api.get<ApiCustomer[]>('/customers')
-    return response.data.map(mapApiCustomer)
+    return coerceArray<ApiCustomer>(response.data).map(mapApiCustomer)
   },
 
   getById: async (id: number): Promise<Customer> => {
@@ -70,6 +71,16 @@ export const customerService = {
   },
 
   delete: async (id: number): Promise<void> => {
-    await api.delete(`/api/customers/${id}`)
+    await api.delete(`/customers/${id}`)
+  },
+
+  /**
+   * Get customer statement for date range
+   */
+  getStatement: async (id: number, fromDate: string, toDate: string): Promise<any> => {
+    const response = await api.get(`/customers/${id}/statement`, {
+      params: { from: fromDate, to: toDate },
+    })
+    return response.data
   },
 }

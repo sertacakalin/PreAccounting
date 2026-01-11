@@ -4,6 +4,7 @@
  */
 
 import api from './api'
+import { coerceArray } from './response'
 import type {
   IncomeExpense,
   CreateIncomeExpenseRequest,
@@ -14,9 +15,13 @@ import type {
 
 export const incomeExpenseService = {
   // Income/Expense CRUD
-  getAll: async (): Promise<IncomeExpense[]> => {
-    const response = await api.get<IncomeExpense[]>('/income-expenses')
-    return response.data
+  getAll: async (params?: {
+    categoryId?: number
+    startDate?: string
+    endDate?: string
+  }): Promise<IncomeExpense[]> => {
+    const response = await api.get<IncomeExpense[]>('/income-expenses', { params })
+    return coerceArray<IncomeExpense>(response.data)
   },
 
   getById: async (id: number): Promise<IncomeExpense> => {
@@ -35,22 +40,37 @@ export const incomeExpenseService = {
   },
 
   delete: async (id: number): Promise<void> => {
-    await api.delete(`/api/income-expenses/${id}`)
+    await api.delete(`/income-expenses/${id}`)
+  },
+
+  /**
+   * Upload receipt for income/expense
+   */
+  uploadReceipt: async (id: number, file: File): Promise<IncomeExpense> => {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await api.post<IncomeExpense>(`/income-expenses/${id}/receipt`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+    return response.data
   },
 
   // Category management
   getIncomeCategories: async (): Promise<Category[]> => {
-    const response = await api.get<Category[]>('/api/categories/income')
-    return response.data
+    const response = await api.get<Category[]>('/categories/income')
+    return coerceArray<Category>(response.data)
   },
 
   getExpenseCategories: async (): Promise<Category[]> => {
-    const response = await api.get<Category[]>('/api/categories/expense')
-    return response.data
+    const response = await api.get<Category[]>('/categories/expense')
+    return coerceArray<Category>(response.data)
   },
 
   createCategory: async (data: CreateCategoryRequest): Promise<Category> => {
-    const response = await api.post<Category>('/api/categories', data)
+    const response = await api.post<Category>('/categories', data)
     return response.data
   },
 }

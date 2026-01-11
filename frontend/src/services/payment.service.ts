@@ -3,6 +3,7 @@
  */
 
 import api from './api'
+import { coerceArray } from './response'
 import type { Payment, CreatePaymentRequest, PaymentType, PaymentMethod } from '@/types/payment.types'
 
 type ApiPayment = {
@@ -52,7 +53,7 @@ export const paymentService = {
     const response = await api.get<ApiPayment[]>('/payments', {
       params,
     })
-    return response.data.map(mapApiPayment)
+    return coerceArray<ApiPayment>(response.data).map(mapApiPayment)
   },
 
   getById: async (id: number): Promise<Payment> => {
@@ -62,7 +63,7 @@ export const paymentService = {
 
   getByInvoice: async (invoiceId: number): Promise<Payment[]> => {
     const response = await api.get<ApiPayment[]>(`/payments/invoice/${invoiceId}`)
-    return response.data.map(mapApiPayment)
+    return coerceArray<ApiPayment>(response.data).map(mapApiPayment)
   },
 
   create: async (data: CreatePaymentRequest): Promise<Payment> => {

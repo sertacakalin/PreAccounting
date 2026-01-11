@@ -10,6 +10,8 @@ export const ROUTES = {
   ADMIN_DASHBOARD: '/admin/dashboard',
   ADMIN_USERS: '/admin/users',
   ADMIN_COMPANIES: '/admin/companies',
+  ADMIN_CURRENCIES: '/admin/currencies',
+  ADMIN_AI_TEMPLATES: '/admin/ai-templates',
   ADMIN_SETTINGS: '/admin/settings',
 
   // Customer routes

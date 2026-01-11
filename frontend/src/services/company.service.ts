@@ -1,10 +1,11 @@
 import api from './api'
+import { coerceArray } from './response'
 import type { Company, CreateCompanyRequest, UpdateCompanyRequest } from '@/types/company.types'
 
 export const companyService = {
   getAll: async (): Promise<Company[]> => {
     const response = await api.get<Company[]>('/admin/companies')
-    return response.data
+    return coerceArray<Company>(response.data)
   },
 
   getById: async (id: number): Promise<Company> => {

@@ -23,6 +23,7 @@ import { ItemsPage } from '@/pages/ItemsPage'
 import { CustomersPage } from '@/pages/CustomersPage'
 import { InvoicesPage } from '@/pages/InvoicesPage'
 import { PaymentsPage } from '@/pages/PaymentsPage'
+import { AIAssistantPage } from '@/pages/ai/AIAssistantPage'
 import { ROUTES } from '@/config/routes'
 import { Toaster } from 'sonner'
 
@@ -61,6 +62,7 @@ function App() {
               <Route path="companies" element={<CompanyManagement />} />
               <Route path="currencies" element={<CurrencyManagement />} />
               <Route path="ai-templates" element={<AITemplateManagement />} />
+              <Route path="ai-assistant" element={<AIAssistantPage />} />
               <Route path="settings" element={<AdminSettings />} />
             </Route>
 
@@ -79,6 +81,7 @@ function App() {
               <Route path="customers" element={<CustomersPage />} />
               <Route path="invoices" element={<InvoicesPage />} />
               <Route path="payments" element={<PaymentsPage />} />
+              <Route path="ai-assistant" element={<AIAssistantPage />} />
             </Route>
 
             {/* Catch all - redirect to home */}

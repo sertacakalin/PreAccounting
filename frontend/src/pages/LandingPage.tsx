@@ -7,7 +7,6 @@ import { useState } from 'react'
 import { Header } from '@/components/landing/Header'
 import { Hero } from '@/components/landing/Hero'
 import { Features } from '@/components/landing/Features'
-import { UpcomingFeatures } from '@/components/landing/UpcomingFeatures'
 import { HowItWorks } from '@/components/landing/HowItWorks'
 import { Footer } from '@/components/landing/Footer'
 import { LoginModal } from '@/components/auth/LoginModal'
@@ -29,7 +28,6 @@ export function LandingPage() {
       <main className="flex-1">
         <Hero onGetStarted={handleLoginClick} />
         <Features />
-        <UpcomingFeatures />
         <HowItWorks />
       </main>
       <Footer />

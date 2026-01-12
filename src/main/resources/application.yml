@@ -46,3 +46,7 @@ currency:
     base-url: "https://v6.exchangerate-api.com/v6"
     server:
       forward-headers-strategy: native
+
+# OpenAI API Configuration
+# Get your API key at: https://platform.openai.com/api-keys
+OPENAI_API_KEY: ${OPENAI_API_KEY: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}

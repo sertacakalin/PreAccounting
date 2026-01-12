@@ -12,6 +12,7 @@ export const ROUTES = {
   ADMIN_COMPANIES: '/admin/companies',
   ADMIN_CURRENCIES: '/admin/currencies',
   ADMIN_AI_TEMPLATES: '/admin/ai-templates',
+  ADMIN_AI_ASSISTANT: '/admin/ai-assistant',
   ADMIN_SETTINGS: '/admin/settings',
 
   // Customer routes
@@ -21,6 +22,7 @@ export const ROUTES = {
   CUSTOMER_CUSTOMERS: '/dashboard/customers',
   CUSTOMER_INVOICES: '/dashboard/invoices',
   CUSTOMER_PAYMENTS: '/dashboard/payments',
+  CUSTOMER_AI_ASSISTANT: '/dashboard/ai-assistant',
   CUSTOMERS: '/customers',
   INVOICES: '/invoices',
   PAYMENTS: '/payments',

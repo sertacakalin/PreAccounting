@@ -10,6 +10,7 @@ import {
   CreditCard,
   LogOut,
   DollarSign,
+  Brain,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -46,6 +47,11 @@ export function CustomerSidebar() {
       label: 'Payments',
       icon: CreditCard,
       path: ROUTES.CUSTOMER_PAYMENTS,
+    },
+    {
+      label: 'Financial AI',
+      icon: Brain,
+      path: ROUTES.CUSTOMER_AI_ASSISTANT,
     },
   ]
 

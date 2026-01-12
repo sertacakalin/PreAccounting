@@ -39,6 +39,7 @@ services:
       SPRING_JPA_SHOW_SQL: false
       FILE_UPLOAD_DIR: /app/uploads/receipts
       SPRING_PROFILES_ACTIVE: docker
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
     volumes:
       - uploads_data:/app/uploads
     networks:

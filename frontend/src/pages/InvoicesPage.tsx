@@ -70,7 +70,7 @@ export function InvoicesPage() {
   const queryClient = useQueryClient()
 
   // Fetch invoices
-  const { data: invoices = [], isLoading } = useQuery({
+  const { data: invoices = [], isLoading } = useQuery<Invoice[]>({
     queryKey: ['invoices', showOnlyUnpaid],
     queryFn: () => invoiceService.getAll({ unpaidOnly: showOnlyUnpaid }),
   })
@@ -293,7 +293,9 @@ export function InvoicesPage() {
                   <TableBody>
                     {selectedInvoice.items.map((item) => (
                       <TableRow key={item.id}>
-                        <TableCell className="font-medium">{item.itemName}</TableCell>
+                        <TableCell className="font-medium">
+                          {item.itemName ?? item.description ?? 'Item'}
+                        </TableCell>
                         <TableCell>{item.quantity}</TableCell>
                         <TableCell>{formatCurrency(item.unitPrice, selectedInvoice.currency)}</TableCell>
                         <TableCell className="font-semibold">

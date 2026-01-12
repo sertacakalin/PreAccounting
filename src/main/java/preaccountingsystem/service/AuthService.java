@@ -66,7 +66,7 @@ public class AuthService {
         String customerName = null;
         if (user.getCustomer() != null) {
             customerId = user.getCustomer().getId();
-            customerName = user.getCustomer().getCompanyName();
+            customerName = user.getCustomer().getName();
         }
 
         return UserDto.builder()

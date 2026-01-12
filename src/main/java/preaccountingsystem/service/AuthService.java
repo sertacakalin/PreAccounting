@@ -3,6 +3,7 @@ package preaccountingsystem.service;
 import preaccountingsystem.config.JwtService;
 import preaccountingsystem.dto.AuthRequest;
 import preaccountingsystem.dto.AuthResponse;
+import preaccountingsystem.dto.UserDto;
 import preaccountingsystem.entity.User;
 import preaccountingsystem.exception.UnauthorizedException;
 import preaccountingsystem.repository.UserRepository;
@@ -53,6 +54,29 @@ public class AuthService {
                 .username(user.getUsername())
                 .role(user.getRole())
                 .customerId(customerId)
+                .build();
+    }
+
+    public UserDto getCurrentUser(User user) {
+        if (user == null) {
+            throw new UnauthorizedException("User not authenticated");
+        }
+
+        Long customerId = null;
+        String customerName = null;
+        if (user.getCustomer() != null) {
+            customerId = user.getCustomer().getId();
+            customerName = user.getCustomer().getCompanyName();
+        }
+
+        return UserDto.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .role(user.getRole())
+                .customerId(customerId)
+                .customerName(customerName)
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 }

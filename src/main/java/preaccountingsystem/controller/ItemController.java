@@ -70,20 +70,8 @@ public class ItemController {
     }
 
     /**
-     * Get item by ID
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<ItemDto> getItemById(
-            @PathVariable Long id,
-            @AuthenticationPrincipal User currentUser) {
-
-        Long companyId = getCompanyIdFromUser(currentUser);
-        ItemDto item = itemService.getItemById(id, companyId);
-        return ResponseEntity.ok(item);
-    }
-
-    /**
      * Get all active items (for dropdown selections)
+     * Note: This endpoint must be defined before /{id} to avoid path matching conflicts
      */
     @GetMapping("/active")
     public ResponseEntity<List<ItemDto>> getActiveItems(
@@ -96,6 +84,7 @@ public class ItemController {
 
     /**
      * Get all unique categories
+     * Note: This endpoint must be defined before /{id} to avoid path matching conflicts
      */
     @GetMapping("/categories")
     public ResponseEntity<List<String>> getCategories(
@@ -104,6 +93,19 @@ public class ItemController {
         Long companyId = getCompanyIdFromUser(currentUser);
         List<String> categories = itemService.getCategories(companyId);
         return ResponseEntity.ok(categories);
+    }
+
+    /**
+     * Get item by ID
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<ItemDto> getItemById(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser) {
+
+        Long companyId = getCompanyIdFromUser(currentUser);
+        ItemDto item = itemService.getItemById(id, companyId);
+        return ResponseEntity.ok(item);
     }
 
     /**

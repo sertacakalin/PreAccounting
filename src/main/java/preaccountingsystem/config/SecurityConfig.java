@@ -35,14 +35,19 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
-                                "/auth/**",
-                                "/api/auth/**",
+                                "/auth/login",
+                                "/auth/logout",
+                                "/api/auth/login",
+                                "/api/auth/logout",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
                                 "/webjars/**",
                                 "/actuator/health"
                         ).permitAll()
+
+                        // /auth/me requires authentication
+                        .requestMatchers("/auth/me", "/api/auth/me").authenticated()
 
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(

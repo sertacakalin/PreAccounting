@@ -64,22 +64,10 @@ public class PaymentController {
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<PaymentDto> getById(
-            @PathVariable Long id,
-            @AuthenticationPrincipal User currentUser) {
-
-        if (currentUser.getCustomer() == null) {
-            throw new BusinessException("User is not associated with any company");
-        }
-
-        PaymentDto result = paymentService.getById(
-                id,
-                currentUser.getCustomer().getId()
-        );
-        return ResponseEntity.ok(result);
-    }
-
+    /**
+     * Get payments by invoice ID
+     * Note: This endpoint must be defined before /{id} to avoid path matching conflicts
+     */
     @GetMapping("/invoice/{invoiceId}")
     public ResponseEntity<List<PaymentDto>> getByInvoice(
             @PathVariable Long invoiceId,
@@ -91,6 +79,22 @@ public class PaymentController {
 
         List<PaymentDto> result = paymentService.getPaymentsByInvoice(
                 invoiceId,
+                currentUser.getCustomer().getId()
+        );
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PaymentDto> getById(
+            @PathVariable Long id,
+            @AuthenticationPrincipal User currentUser) {
+
+        if (currentUser.getCustomer() == null) {
+            throw new BusinessException("User is not associated with any company");
+        }
+
+        PaymentDto result = paymentService.getById(
+                id,
                 currentUser.getCustomer().getId()
         );
         return ResponseEntity.ok(result);

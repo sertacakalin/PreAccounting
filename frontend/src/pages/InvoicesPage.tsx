@@ -3,7 +3,7 @@
  * Full backend integration with list, create, and detail views
  */
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -87,13 +87,20 @@ export function InvoicesPage() {
     defaultValues: {
       invoiceDate: new Date().toISOString().slice(0, 10),
       dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10), // 30 days from now
-      customerSupplierId: customers.length > 0 ? customers[0].id : 0,
+      customerSupplierId: 1,
       currency: 'USD',
       type: 'INCOME',
       notes: '',
       items: [{ itemName: '', quantity: 1, unitPrice: 0, vatRate: 0 }],
     },
   })
+
+  // Update customerSupplierId when customers load
+  useEffect(() => {
+    if (customers.length > 0 && form.getValues('customerSupplierId') === 1) {
+      form.setValue('customerSupplierId', customers[0].id)
+    }
+  }, [customers, form])
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,

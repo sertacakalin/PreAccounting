@@ -1,5 +1,7 @@
 version: '3.8'
 
+# .env dosyasındaki değişkenler otomatik olarak yüklenir
+
 services:
   mysql:
     image: mysql:8.0
@@ -39,7 +41,8 @@ services:
       SPRING_JPA_SHOW_SQL: false
       FILE_UPLOAD_DIR: /app/uploads/receipts
       SPRING_PROFILES_ACTIVE: docker
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      SPRING_APPLICATION_JSON: '{"openai":{"api-key":"${OPENAI_API_KEY:-}"}}'
     volumes:
       - uploads_data:/app/uploads
     networks:

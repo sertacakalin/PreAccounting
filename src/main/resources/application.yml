@@ -51,4 +51,4 @@ currency:
 # Get your API key at: https://platform.openai.com/api-keys
 # IMPORTANT: Set OPENAI_API_KEY environment variable
 openai:
-  api-key: ${OPENAI_API_KEY:}
+  api-key: ${OPENAI_API_KEY}

@@ -23,6 +23,7 @@ import java.util.ArrayList; // YENİ
 import java.util.HashMap; // YENİ
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,7 +65,7 @@ public class AIService {
         // Build context from company data
         String context = buildContext(companyId);
 
-        // DEĞİŞİKLİK: Artık "Mock" (sahte) cevap yerine GERÇEK AI çağırılıyor
+        // Call AI service
         String aiResponse = callOpenAI(request.getQuery(), context);
 
         // Log AI usage
@@ -77,10 +78,10 @@ public class AIService {
                 .build();
         aiAuditLogRepository.save(auditLog);
 
-        // Calculate remaining queries
+        // Calculate remaining queries AFTER saving the current one
         Map<String, Long> usageStats = getUsageStatsCounts(companyId);
-        Integer remainingDaily = (int) (settings.getAiDailyLimit() - usageStats.get("daily") - 1);
-        Integer remainingMonthly = (int) (settings.getAiMonthlyLimit() - usageStats.get("monthly") - 1);
+        Integer remainingDaily = (int) (settings.getAiDailyLimit() - usageStats.get("daily"));
+        Integer remainingMonthly = (int) (settings.getAiMonthlyLimit() - usageStats.get("monthly"));
 
         return AIQueryResponse.builder()
                 .response(aiResponse)
@@ -95,28 +96,26 @@ public class AIService {
     private String callOpenAI(String userQuery, String contextData) {
         try {
             // API anahtarı kontrolü
-            if (openAiApiKey == null || openAiApiKey.trim().isEmpty()) {
+            String apiKey = resolveApiKey();
+            if (apiKey.isEmpty()) {
                 return "HATA: OpenAI API anahtarı yapılandırılmamış. Lütfen sistem yöneticinizle iletişime geçin.";
             }
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.set("Authorization", "Bearer " + openAiApiKey);
-
-            // AI'ya gönderilecek talimat (Prompt)
-            String prompt = "Sen profesyonel bir ön muhasebe asistanısın. " +
-                    "Aşağıdaki şirket verilerine dayanarak kullanıcının sorusunu yanıtla. " +
-                    "Cevabın Türkçe, net ve finansal açıdan tutarlı olsun. " +
-                    "VERİLER:\n" + contextData + "\n\n" +
-                    "SORU: " + userQuery;
+            headers.setBearerAuth(apiKey);
 
             // JSON Gövdesini oluşturma
             Map<String, Object> requestBody = new HashMap<>();
             requestBody.put("model", "gpt-3.5-turbo");
 
             List<Map<String, String>> messages = new ArrayList<>();
-            messages.add(Map.of("role", "system", "content", "Sen yardımcı bir finans uzmanısın."));
-            messages.add(Map.of("role", "user", "content", prompt));
+            // Single professional system instruction
+            messages.add(Map.of("role", "system", "content",
+                    "You are a professional financial expert and pre-accounting assistant."));
+            // Data and query
+            messages.add(Map.of("role", "user", "content",
+                    "DATA:\n" + contextData + "\n\nQUESTION: " + userQuery));
 
             requestBody.put("messages", messages);
 
@@ -125,21 +124,45 @@ public class AIService {
             // İsteği gönder
             Map<String, Object> response = restTemplate.postForObject(OPENAI_URL, entity, Map.class);
 
-            // Cevabı ayıkla (JSON parsing)
-            if (response != null && response.containsKey("choices")) {
-                List<Map<String, Object>> choices = (List<Map<String, Object>>) response.get("choices");
-                if (!choices.isEmpty()) {
-                    Map<String, Object> message = (Map<String, Object>) choices.get(0).get("message");
-                    return (String) message.get("content");
-                }
-            }
-            return "AI servisine ulaşıldı ancak anlamlı bir cevap alınamadı.";
+            // Cevabı ayıkla (JSON parsing) with null-safe Optional approach
+            return Optional.ofNullable(response)
+                    .map(r -> r.get("choices"))
+                    .filter(List.class::isInstance)
+                    .map(List.class::cast)
+                    .filter(list -> !list.isEmpty())
+                    .map(list -> list.get(0))
+                    .filter(Map.class::isInstance)
+                    .map(Map.class::cast)
+                    .map(choice -> choice.get("message"))
+                    .filter(Map.class::isInstance)
+                    .map(Map.class::cast)
+                    .map(message -> message.get("content"))
+                    .map(Object::toString)
+                    .orElse("AI servisine ulaşıldı ancak anlamlı bir cevap alınamadı.");
 
         } catch (org.springframework.web.client.HttpClientErrorException e) {
             return "AI Servisi hatası: " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
         } catch (Exception e) {
             return "AI Servisi şu an yanıt veremiyor. Hata: " + e.getMessage();
         }
+    }
+
+    private String resolveApiKey() {
+        String key = openAiApiKey;
+        if (key == null || key.trim().isEmpty()) {
+            key = System.getenv("OPENAI_API_KEY");
+        }
+        if (key == null) {
+            return "";
+        }
+        key = key.trim();
+        if (key.startsWith("\"") && key.endsWith("\"") && key.length() > 1) {
+            key = key.substring(1, key.length() - 1).trim();
+        }
+        if (key.toLowerCase().startsWith("bearer ")) {
+            key = key.substring(7).trim();
+        }
+        return key;
     }
 
     // YENİ: Kod tekrarını önlemek için limit kontrolünü buraya aldım
@@ -227,9 +250,16 @@ public class AIService {
         return context.toString();
     }
 
+    /**
+     * Estimates tokens for usage tracking. This is a rough approximation.
+     * Turkish text typically uses ~3 chars per token due to UTF-8 encoding.
+     * For accurate tracking, consider using OpenAI's tiktoken library or the actual
+     * token count returned in the API response (usage.total_tokens).
+     */
     private Integer estimateTokens(String query, String response) {
         int totalChars = (query != null ? query.length() : 0) + (response != null ? response.length() : 0);
-        return (int) Math.ceil(totalChars / 4.0);
+        // Turkish token estimation: ~3 chars per token
+        return (int) Math.ceil(totalChars / 3.0);
     }
 
     @Transactional(readOnly = true)

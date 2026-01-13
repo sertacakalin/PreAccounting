@@ -71,3 +71,7 @@ logging:
     org.springframework.web: INFO
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+# OpenAI API Configuration
+openai:
+  api-key: ${OPENAI_API_KEY:}

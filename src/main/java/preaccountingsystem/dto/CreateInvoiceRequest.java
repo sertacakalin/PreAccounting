@@ -1,7 +1,6 @@
 package preaccountingsystem.dto;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -9,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import preaccountingsystem.validation.ValidCurrency;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,13 +23,13 @@ public class CreateInvoiceRequest {
     private LocalDate invoiceDate;
 
     @NotNull(message = "Due date is required")
-    @Future(message = "Due date must be in the future")
+    // Note: Due date validation (must be >= invoice date) is handled in service layer
     private LocalDate dueDate;
 
     @Size(max = 1000, message = "Notes cannot exceed 1000 characters")
     private String notes;
 
-    @Size(min = 3, max = 3, message = "Currency must be a 3-letter ISO code")
+    @ValidCurrency
     private String currency; // Optional, defaults to USD if not provided
 
     @NotNull(message = "Customer/Supplier ID is required")

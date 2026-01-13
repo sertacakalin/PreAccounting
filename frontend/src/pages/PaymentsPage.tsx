@@ -49,7 +49,6 @@ const paymentSchema = z.object({
   ]),
   currency: z.string().length(3, 'Currency must be a 3-letter ISO code').optional(),
   customerSupplierId: z.number().min(1, 'Customer/Supplier is required'),
-  invoiceId: z.number().optional(),
   notes: z.string().max(1000).optional().or(z.literal('')),
 })
 
@@ -104,7 +103,6 @@ export function PaymentsPage() {
       paymentMethod: 'CASH',
       currency: 'TRY',
       customerSupplierId: 0,
-      invoiceId: undefined,
       notes: '',
     },
   })
@@ -130,7 +128,6 @@ export function PaymentsPage() {
       paymentMethod: data.paymentMethod,
       currency: data.currency?.trim() || undefined,
       customerSupplierId: data.customerSupplierId,
-      invoiceId: data.invoiceId,
       notes: data.notes === '' ? undefined : data.notes,
     }
     createMutation.mutate(payload)
@@ -376,14 +373,13 @@ export function PaymentsPage() {
                   <TableHead>Counterparty</TableHead>
                   <TableHead>Method</TableHead>
                   <TableHead>Amount</TableHead>
-                  <TableHead>Invoice</TableHead>
                   <TableHead>Notes</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredPayments.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center text-muted-foreground">
+                    <TableCell colSpan={6} className="text-center text-muted-foreground">
                       No payments found
                     </TableCell>
                   </TableRow>
@@ -406,9 +402,6 @@ export function PaymentsPage() {
                         }`}
                       >
                         {payment.type === 'COLLECTION' ? '+' : '-'}${payment.amount.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {payment.invoiceNumber || (payment.invoiceId ? `#${payment.invoiceId}` : 'N/A')}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {payment.notes || '—'}
@@ -479,23 +472,12 @@ export function PaymentsPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="payment-date">Payment Date *</Label>
-                <Input id="payment-date" type="date" {...createForm.register('paymentDate')} />
-                {createForm.formState.errors.paymentDate && (
-                  <p className="text-sm text-destructive">{createForm.formState.errors.paymentDate.message}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="payment-invoice">Invoice ID</Label>
-                <Input
-                  id="payment-invoice"
-                  type="number"
-                  placeholder="Optional"
-                  {...createForm.register('invoiceId', { valueAsNumber: true })}
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="payment-date">Payment Date *</Label>
+              <Input id="payment-date" type="date" {...createForm.register('paymentDate')} />
+              {createForm.formState.errors.paymentDate && (
+                <p className="text-sm text-destructive">{createForm.formState.errors.paymentDate.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">

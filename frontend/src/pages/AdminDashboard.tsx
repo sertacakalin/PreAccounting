@@ -36,7 +36,6 @@ import {
   ShieldCheck,
   UserCheck,
   Activity,
-  Settings,
 } from 'lucide-react'
 import { format } from 'date-fns'
 
@@ -287,80 +286,46 @@ export function AdminDashboard() {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Recent Users */}
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Recent Users</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {recentUsers.length === 0 ? (
-                    <p className="text-center text-muted-foreground py-8">No users yet</p>
-                ) : (
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Username</TableHead>
-                          <TableHead>Role</TableHead>
-                          <TableHead>Company</TableHead>
-                          <TableHead>Created</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {recentUsers.map((user) => (
-                            <TableRow key={user.id}>
-                              <TableCell className="font-medium">{user.username}</TableCell>
-                              <TableCell>
-                                <Badge variant={user.role === 'ADMIN' ? 'default' : 'secondary'}>
-                                  {user.role}
-                                </Badge>
-                              </TableCell>
-                              <TableCell className="text-sm text-muted-foreground">
-                                {user.customerName || 'N/A'}
-                              </TableCell>
-                              <TableCell className="text-sm text-muted-foreground">
-                                {formatDate(user.createdAt)}
-                              </TableCell>
-                            </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button className="w-full" variant="outline" disabled>
-                  <Users className="mr-2 h-4 w-4" />
-                  Manage Users
-                </Button>
-                <Button className="w-full" variant="outline" disabled>
-                  <Building2 className="mr-2 h-4 w-4" />
-                  Manage Companies
-                </Button>
-                <Button className="w-full" variant="outline" disabled>
-                  <Settings className="mr-2 h-4 w-4" />
-                  System Settings
-                </Button>
-
-                <div className="rounded-lg bg-muted/50 p-4 mt-4">
-                  <p className="text-sm font-semibold mb-2">Coming Soon:</p>
-                  <ul className="space-y-1 text-sm text-muted-foreground">
-                    <li>• User Management Interface</li>
-                    <li>• Company Management</li>
-                    <li>• System Configuration</li>
-                    <li>• Audit Logs</li>
-                    <li>• Financial Reports</li>
-                  </ul>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Recent Users */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Users</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {recentUsers.length === 0 ? (
+                  <p className="text-center text-muted-foreground py-8">No users yet</p>
+              ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Username</TableHead>
+                        <TableHead>Role</TableHead>
+                        <TableHead>Company</TableHead>
+                        <TableHead>Created</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {recentUsers.map((user) => (
+                          <TableRow key={user.id}>
+                            <TableCell className="font-medium">{user.username}</TableCell>
+                            <TableCell>
+                              <Badge variant={user.role === 'ADMIN' ? 'default' : 'secondary'}>
+                                {user.role}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {user.customerName || 'N/A'}
+                            </TableCell>
+                            <TableCell className="text-sm text-muted-foreground">
+                              {formatDate(user.createdAt)}
+                            </TableCell>
+                          </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Recent Companies */}
           <Card>

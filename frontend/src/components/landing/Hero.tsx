@@ -23,7 +23,7 @@ export function Hero({ onGetStarted }: HeroProps) {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Button size="lg" variant="outline" className="text-base" onClick={onGetStarted}>
-              Sign In
+              Login
             </Button>
           </div>
         </div>

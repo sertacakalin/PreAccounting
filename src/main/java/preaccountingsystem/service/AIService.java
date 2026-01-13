@@ -40,12 +40,13 @@ public class AIService {
     // YENİ: Dış dünyaya (OpenAI) istek atmak için araç
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // YENİ: docker-compose.yml dosyasından API anahtarını çeker
-    @Value("${OPENAI_API_KEY}")
+    // YENİ: application.yml veya environment variable'dan API anahtarını çeker
+    @Value("${openai.api-key:}")
     private String openAiApiKey;
 
     // YENİ: OpenAI bağlantı adresi
     private final String OPENAI_URL = "https://api.openai.com/v1/chat/completions";
+
 
     @Transactional
     public AIQueryResponse processQuery(AIQueryRequest request, Long companyId, User user) {
@@ -93,9 +94,14 @@ public class AIService {
     // YENİ METOT: Gerçek OpenAI API çağrısı yapan kısım
     private String callOpenAI(String userQuery, String contextData) {
         try {
+            // API anahtarı kontrolü
+            if (openAiApiKey == null || openAiApiKey.trim().isEmpty()) {
+                return "HATA: OpenAI API anahtarı yapılandırılmamış. Lütfen sistem yöneticinizle iletişime geçin.";
+            }
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            headers.setBearerAuth(openAiApiKey); // API Anahtarını ekler
+            headers.set("Authorization", "Bearer " + openAiApiKey);
 
             // AI'ya gönderilecek talimat (Prompt)
             String prompt = "Sen profesyonel bir ön muhasebe asistanısın. " +
@@ -106,7 +112,7 @@ public class AIService {
 
             // JSON Gövdesini oluşturma
             Map<String, Object> requestBody = new HashMap<>();
-            requestBody.put("model", "gpt-3.5-turbo"); // Hızlı ve ucuz model
+            requestBody.put("model", "gpt-3.5-turbo");
 
             List<Map<String, String>> messages = new ArrayList<>();
             messages.add(Map.of("role", "system", "content", "Sen yardımcı bir finans uzmanısın."));
@@ -129,10 +135,10 @@ public class AIService {
             }
             return "AI servisine ulaşıldı ancak anlamlı bir cevap alınamadı.";
 
+        } catch (org.springframework.web.client.HttpClientErrorException e) {
+            return "AI Servisi hatası: " + e.getStatusCode() + " - " + e.getResponseBodyAsString();
         } catch (Exception e) {
-            e.printStackTrace();
-            // Hata durumunda kullanıcıya bilgi ver
-            return "AI Servisi şu an yanıt veremiyor. Lütfen API anahtarınızı kontrol edin veya daha sonra deneyin. Hata: " + e.getMessage();
+            return "AI Servisi şu an yanıt veremiyor. Hata: " + e.getMessage();
         }
     }
 

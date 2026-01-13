@@ -87,7 +87,7 @@ export function InvoicesPage() {
     defaultValues: {
       invoiceDate: new Date().toISOString().slice(0, 10),
       dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10), // 30 days from now
-      customerSupplierId: 0,
+      customerSupplierId: customers.length > 0 ? customers[0].id : 0,
       currency: 'USD',
       type: 'INCOME',
       notes: '',

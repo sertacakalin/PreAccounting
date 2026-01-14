@@ -27,7 +27,6 @@ import {
 const settingsSchema = z.object({
   defaultCurrency: z.string().optional(),
   vatRates: z.array(z.object({ value: z.number().min(0).max(100) })),
-  invoiceNumberFormat: z.string().optional(),
   aiDailyLimit: z.number().min(1).optional(),
   aiMonthlyLimit: z.number().min(1).optional(),
 })
@@ -62,7 +61,6 @@ export function AdminSettings() {
     values: settings ? {
       defaultCurrency: settings.defaultCurrency || '',
       vatRates: toFormData(settings.vatRates || []),
-      invoiceNumberFormat: settings.invoiceNumberFormat || '',
       aiDailyLimit: settings.aiDailyLimit || 10,
       aiMonthlyLimit: settings.aiMonthlyLimit || 300,
     } : undefined,
@@ -140,17 +138,6 @@ export function AdminSettings() {
               </p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="invoiceNumberFormat">Invoice Number Format</Label>
-              <Input
-                id="invoiceNumberFormat"
-                placeholder="e.g., INV-{YYYY}-{MM}-{####}"
-                {...form.register('invoiceNumberFormat')}
-              />
-              <p className="text-sm text-muted-foreground">
-                Format for generating invoice numbers. Use {'{YYYY}'} for year, {'{MM}'} for month, {'{####}'} for sequence
-              </p>
-            </div>
           </CardContent>
         </Card>
 

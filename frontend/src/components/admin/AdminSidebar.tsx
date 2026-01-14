@@ -5,7 +5,6 @@ import {
   LayoutDashboard,
   Users,
   Building2,
-  Settings,
   LogOut,
   DollarSign,
   Coins,
@@ -35,11 +34,6 @@ export function AdminSidebar() {
       label: 'Currencies',
       icon: Coins,
       path: ROUTES.ADMIN_CURRENCIES,
-    },
-    {
-      label: 'Settings',
-      icon: Settings,
-      path: ROUTES.ADMIN_SETTINGS,
     },
   ]
 

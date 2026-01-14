@@ -7,7 +7,6 @@ export interface SystemSettings {
   id?: number
   defaultCurrency?: string
   vatRates?: number[]
-  invoiceNumberFormat?: string
   aiDailyLimit?: number
   aiMonthlyLimit?: number
   createdAt?: string
@@ -17,7 +16,6 @@ export interface SystemSettings {
 export interface UpdateSystemSettingsRequest {
   defaultCurrency?: string
   vatRates?: number[]
-  invoiceNumberFormat?: string
   aiDailyLimit?: number
   aiMonthlyLimit?: number
 }

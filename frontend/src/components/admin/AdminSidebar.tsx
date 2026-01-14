@@ -9,8 +9,6 @@ import {
   LogOut,
   DollarSign,
   Coins,
-  Sparkles,
-  Brain,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -37,16 +35,6 @@ export function AdminSidebar() {
       label: 'Currencies',
       icon: Coins,
       path: ROUTES.ADMIN_CURRENCIES,
-    },
-    {
-      label: 'AI Templates',
-      icon: Sparkles,
-      path: ROUTES.ADMIN_AI_TEMPLATES,
-    },
-    {
-      label: 'Financial AI',
-      icon: Brain,
-      path: ROUTES.ADMIN_AI_ASSISTANT,
     },
     {
       label: 'Settings',

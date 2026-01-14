@@ -1,10 +1,4 @@
-import { Button } from '@/components/ui/button'
-
-interface HeroProps {
-  onGetStarted?: () => void
-}
-
-export function Hero({ onGetStarted }: HeroProps) {
+export function Hero() {
   return (
     <section className="relative overflow-hidden gradient-finance">
       <div className="container px-4 py-20 md:py-32">
@@ -17,15 +11,9 @@ export function Hero({ onGetStarted }: HeroProps) {
 
           {/* Description */}
           <p className="mb-8 text-lg text-muted-foreground sm:text-xl md:text-2xl max-w-2xl mx-auto">
-            Complete financial management solution for your business. Track income, expenses, invoices, and payments efficiently.
+            Complete financial management solution for your business, now integrated with AI to automate insights and workflows.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" variant="outline" className="text-base" onClick={onGetStarted}>
-              Login
-            </Button>
-          </div>
         </div>
       </div>
 

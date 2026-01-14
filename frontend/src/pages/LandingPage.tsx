@@ -26,7 +26,7 @@ export function LandingPage() {
     <div className="min-h-screen flex flex-col">
       <Header onLoginClick={handleLoginClick} />
       <main className="flex-1">
-        <Hero onGetStarted={handleLoginClick} />
+        <Hero />
         <Features />
         <HowItWorks />
       </main>

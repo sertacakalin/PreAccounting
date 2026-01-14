@@ -5,6 +5,7 @@ import {
   Users,
   CreditCard,
   BarChart3,
+  Sparkles,
 } from 'lucide-react'
 
 export function Features() {
@@ -33,6 +34,11 @@ export function Features() {
       icon: BarChart3,
       title: 'Financial Reports',
       description: 'Generate detailed financial reports and insights to drive business decisions.',
+    },
+    {
+      icon: Sparkles,
+      title: 'AI Integration',
+      description: 'Use AI assistance to speed up categorization, insights, and routine workflows.',
     },
   ]
 

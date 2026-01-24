@@ -18,6 +18,7 @@ export const ROUTES = {
   // Customer routes
   CUSTOMER_DASHBOARD: '/dashboard',
   CUSTOMER_INCOME_EXPENSE: '/dashboard/income-expense',
+  CUSTOMER_DOCUMENTS: '/dashboard/documents',
   CUSTOMER_ITEMS: '/dashboard/items',
   CUSTOMER_CUSTOMERS: '/dashboard/customers',
   CUSTOMER_INVOICES: '/dashboard/invoices',

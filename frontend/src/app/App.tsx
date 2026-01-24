@@ -19,6 +19,7 @@ import { AITemplateManagement } from '@/pages/AITemplateManagement'
 import { AdminSettings } from '@/pages/AdminSettings'
 import { CustomerDashboard } from '@/pages/CustomerDashboard'
 import { IncomeExpensePage } from '@/pages/IncomeExpensePage'
+import { DocumentsPage } from '@/pages/DocumentsPage'
 import { ItemsPage } from '@/pages/ItemsPage'
 import { CustomersPage } from '@/pages/CustomersPage'
 import { InvoicesPage } from '@/pages/InvoicesPage'
@@ -77,6 +78,7 @@ function App() {
             >
               <Route index element={<CustomerDashboard />} />
               <Route path="income-expense" element={<IncomeExpensePage />} />
+              <Route path="documents" element={<DocumentsPage />} />
               <Route path="items" element={<ItemsPage />} />
               <Route path="customers" element={<CustomersPage />} />
               <Route path="invoices" element={<InvoicesPage />} />

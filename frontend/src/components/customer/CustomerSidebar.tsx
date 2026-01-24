@@ -11,6 +11,7 @@ import {
   LogOut,
   DollarSign,
   Brain,
+  ScanText,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -27,6 +28,11 @@ export function CustomerSidebar() {
       label: 'Income & Expense',
       icon: TrendingUp,
       path: ROUTES.CUSTOMER_INCOME_EXPENSE,
+    },
+    {
+      label: 'Documents (OCR)',
+      icon: ScanText,
+      path: ROUTES.CUSTOMER_DOCUMENTS,
     },
     {
       label: 'Items',

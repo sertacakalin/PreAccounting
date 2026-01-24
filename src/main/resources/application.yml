@@ -49,6 +49,11 @@ currency:
 
 # OpenAI API Configuration
 # Get your API key at: https://platform.openai.com/api-keys
-# IMPORTANT: Set OPENAI_API_KEY environment variable
+# IMPORTANT: Set OPENAI_API_KEY environment variable or add it here
 openai:
-  api-key: ${OPENAI_API_KEY}
+  api-key: ${OPENAI_API_KEY:}
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    preaccountingsystem: DEBUG
